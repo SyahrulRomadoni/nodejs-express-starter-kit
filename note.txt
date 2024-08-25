@@ -1,0 +1,37 @@
+## Run App ##
+node app.js / npm run dev
+
+## Install Library ##
+npm install
+
+## Sequelize ##
+// Make Migration
+npx sequelize-cli migration:generate --name user
+// Run Migration
+npx sequelize-cli db:migrate
+
+// Make Seeder
+npx sequelize-cli seed:generate --name user
+// Run Seeder
+npx sequelize-cli db:seed:all
+
+// Make Model and Migration
+npx sequelize-cli model:generate --name User --attributes name:string,email:string,password:string,role:string
+
+# Make JWT Secret
+node generate-key.js
+
+## Library ##
+- express untuk membuat server web.
+- jsonwebtoken untuk otentikasi JWT.
+- bcryptjs untuk hashing password.
+- dotenv untuk memuat variabel lingkungan.
+- sequelize untuk ORM.
+- sequelize-cli untuk migrasi dan seeder.
+- mysql2 atau pg dan pg-hstore untuk koneksi MySQL atau PostgreSQL.
+
+npm init -y
+npm install express jsonwebtoken bcryptjs dotenv sequelize sequelize-cli mysql2 pg pg-hstore
+npx sequelize-cli init
+npm install -g nodemon
+npm install --save-dev nodemon
