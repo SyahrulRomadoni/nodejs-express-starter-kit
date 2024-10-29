@@ -8,45 +8,35 @@ const { v4: uuidv4 } = require('uuid');
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up (queryInterface, Sequelize) {
-        /**
-         * Add seed commands here.
-         *
-         * Example:
-         * await queryInterface.bulkInsert('People', [{
-         *   name: 'John Doe',
-         *   isBetaMember: false
-         * }], {});
-        */
+        // Ambil data UUID dari tabel Roles
+        const roles = await queryInterface.sequelize.query(
+            `SELECT uuid FROM "roles" ORDER BY "created_at" ASC`,
+            { type: Sequelize.QueryTypes.SELECT }
+        );
 
-        return queryInterface.bulkInsert('Users', [
+        return queryInterface.bulkInsert('users', [
             {
                 uuid: uuidv4(),
-                uuid_role: 'ae0role1-5f16-4313-8dc8-b31709516641',
+                uuid_role: roles[0].uuid,
                 name: 'Admin',
                 email: 'admin@example.com',
                 password: await bcrypt.hash('password', 10),
-                createdAt: new Date(),
-                updatedAt: new Date()
+                created_at: new Date(),
+                updated_at: new Date()
             },
             {
                 uuid: uuidv4(),
-                uuid_role: 'ae0role2-5f16-4313-8dc8-b31709516642',
+                uuid_role: roles[1].uuid,
                 name: 'User',
                 email: 'user@example.com',
                 password: await bcrypt.hash('password', 10),
-                createdAt: new Date(),
-                updatedAt: new Date()
+                created_at: new Date(),
+                updated_at: new Date()
             },
         ]);
     },
 
     async down (queryInterface, Sequelize) {
-        /**
-         * Add commands to revert seed here.
-         *
-         * Example:
-         * await queryInterface.bulkDelete('People', null, {});
-         */
         return queryInterface.bulkDelete('Users', null, {});
     }
 };

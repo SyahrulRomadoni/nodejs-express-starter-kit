@@ -5,13 +5,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up (queryInterface, Sequelize) {
-        /**
-         * Add altering commands here.
-         *
-         * Example:
-         * await queryInterface.createTable('Users', { id: Sequelize.INTEGER });
-         */
-        await queryInterface.createTable('Users', {
+        await queryInterface.createTable('users', {
             // id: {
             //     allowNull: false,
             //     autoIncrement: true,
@@ -42,15 +36,15 @@ module.exports = {
                 type: Sequelize.STRING,
                 allowNull: false
             },
-            createdAt: {
+            created_at: {
                 allowNull: false,
                 type: Sequelize.DATE
             },
-            updatedAt: {
+            updated_at: {
                 allowNull: false,
                 type: Sequelize.DATE
             },
-            deletedAt: {
+            deleted_at: {
                 allowNull: true,
                 type: Sequelize.DATE
             }
@@ -58,12 +52,6 @@ module.exports = {
     },
 
     async down (queryInterface, Sequelize) {
-        /**
-         * Add reverting commands here.
-         *
-         * Example:
-         * await queryInterface.dropTable('Users');
-         */
         await queryInterface.dropTable('Users');
     }
 };

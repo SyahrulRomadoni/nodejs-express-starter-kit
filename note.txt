@@ -15,8 +15,12 @@ npx sequelize-cli seed:generate --name user
 // Run Seeder
 npx sequelize-cli db:seed:all
 
+//Sedeer One Run
+npx sequelize-cli db:seed --seed 20240825024126-role.js
+npx sequelize-cli db:seed --seed 20240824062807-user.js
+
 // Make Model and Migration
-npx sequelize-cli model:generate --name User --attributes name:string,email:string,password:string,role:string
+npx sequelize-cli model:generate --name user --attributes name:string,email:string,password:string,role:string
 
 # Make JWT Secret
 node generate-key.js
