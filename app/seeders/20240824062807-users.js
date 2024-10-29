@@ -10,7 +10,7 @@ module.exports = {
     async up (queryInterface, Sequelize) {
         // Ambil data UUID dari tabel Roles
         const roles = await queryInterface.sequelize.query(
-            `SELECT uuid FROM "roles" ORDER BY "created_at" ASC`,
+            `SELECT uuid FROM "roles" ORDER BY "createdAt" ASC`,
             { type: Sequelize.QueryTypes.SELECT }
         );
 
@@ -19,19 +19,19 @@ module.exports = {
                 uuid: uuidv4(),
                 uuid_role: roles[0].uuid,
                 name: 'Admin',
-                email: 'admin@example.com',
+                email: 'admin@gmail.com',
                 password: await bcrypt.hash('password', 10),
-                created_at: new Date(),
-                updated_at: new Date()
+                createdAt: new Date(),
+                updatedAt: new Date()
             },
             {
                 uuid: uuidv4(),
                 uuid_role: roles[1].uuid,
                 name: 'User',
-                email: 'user@example.com',
+                email: 'user@gmail.com',
                 password: await bcrypt.hash('password', 10),
-                created_at: new Date(),
-                updated_at: new Date()
+                createdAt: new Date(),
+                updatedAt: new Date()
             },
         ]);
     },

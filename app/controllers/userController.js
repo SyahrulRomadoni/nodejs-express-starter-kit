@@ -1,7 +1,7 @@
 // app/config
 
 const bcrypt = require('bcryptjs');
-const { User, Role } = require('../models');
+const { Users, Roles } = require('../models');
 
 exports.getCurrent = async (req, res) => {
     const { uuid } = req.user;
@@ -14,19 +14,17 @@ exports.getCurrent = async (req, res) => {
     }
 
     try {
-        const users = await User.findOne({
+        const users = await Users.findOne({
             where: { uuid, deletedAt: null },
             attributes: ['name', 'email',],
             include: [
                 {
-                    model: Role,
-                    as: 'role',
+                    model: Roles,
+                    as: 'roles',
                     attributes: ['name']
                 }
             ],
         });
-
-        console.log('User:', users);
 
         if (!users) {
             return res.status(404).json({
@@ -54,13 +52,13 @@ exports.index = async (req, res) => {
     const offset = (page - 1) * limit;
 
     try {
-        const { count, rows: users } = await User.findAndCountAll({
+        const { count, rows: users } = await Users.findAndCountAll({
             where: { deletedAt: null },
             attributes: ['name', 'email',],
             include: [
                 {
-                    model: Role,
-                    as: 'role',
+                    model: Roles,
+                    as: 'roles',
                     attributes: ['name']
                 }
             ],
@@ -90,13 +88,13 @@ exports.read = async (req, res) => {
     const { uuid } = req.params;
 
     try {
-        const users = await User.findOne({
+        const users = await Users.findOne({
             where: { uuid, deletedAt: null },
             attributes: ['name', 'email',],
             include: [
                 {
-                    model: Role,
-                    as: 'role',
+                    model: Roles,
+                    as: 'roles',
                     attributes: ['name']
                 }
             ],
@@ -127,7 +125,7 @@ exports.updated = async (req, res) => {
     const { name, email, password } = req.body;
 
     try {
-        const users = await User.findOne({
+        const users = await Users.findOne({
             where: { uuid, deletedAt: null },
         });
 
@@ -163,7 +161,7 @@ exports.deleted = async (req, res) => {
     const { uuid } = req.params;
 
     try {
-        const users = await User.findOne({ where: { uuid, deletedAt: null } });
+        const users = await Users.findOne({ where: { uuid, deletedAt: null } });
 
         if (!users) {
             return res.status(404).json({

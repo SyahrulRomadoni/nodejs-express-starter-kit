@@ -12,14 +12,14 @@ module.exports = {
             {
                 uuid: uuidv4(),
                 name: 'Admin',
-                created_at: new Date(),
-                updated_at: new Date()
+                createdAt: new Date(),
+                updatedAt: new Date()
             },
             {
                 uuid: uuidv4(),
                 name: 'User',
-                created_at: new Date(),
-                updated_at: new Date()
+                createdAt: new Date(),
+                updatedAt: new Date()
             },
         ]);
     },

@@ -1,7 +1,7 @@
-// app/config
+// app/controllers
 
 const bcrypt = require('bcryptjs');
-const { Role } = require('../models');
+const { Roles } = require('../models');
 
 exports.index = async (req, res) => {
     const page = parseInt(req.query.page, 10) || 1;
@@ -9,7 +9,7 @@ exports.index = async (req, res) => {
     const offset = (page - 1) * limit;
 
     try {
-        const { count, rows: roles } = await Role.findAndCountAll({
+        const { count, rows: roles } = await Roles.findAndCountAll({
             where: { deletedAt: null },
             attributes: ['name'],
             limit: limit,
@@ -38,7 +38,7 @@ exports.read = async (req, res) => {
     const { uuid } = req.params;
 
     try {
-        const roles = await Role.findOne({
+        const roles = await Roles.findOne({
             where: { uuid, deletedAt: null },
             attributes: ['name'],
         });
@@ -68,7 +68,7 @@ exports.updated = async (req, res) => {
     const { name, email, password } = req.body;
 
     try {
-        const roles = await Role.findOne({
+        const roles = await Roles.findOne({
             where: { uuid, deletedAt: null },
         });
 
@@ -103,7 +103,7 @@ exports.deleted = async (req, res) => {
     const { uuid } = req.params;
 
     try {
-        const roles = await Role.findOne({ where: { uuid, deletedAt: null } });
+        const roles = await Roles.findOne({ where: { uuid, deletedAt: null } });
 
         if (!roles) {
             return res.status(404).json({

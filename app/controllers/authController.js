@@ -1,16 +1,17 @@
-// app/config
+// app/controllers
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
-const { User } = require('../models');
+const db = require('../models'); // Mengimpor db
+const { Users } = db; // Mengambil model Users dari db
 const { addToBlacklist } = require('../middlewares/tokenBlacklist');
 
 exports.register = async (req, res) => {
     const { uuid_role, name, email, password } = req.body;
 
     try {
-        const existingUser = await User.findOne({ where: { email } });
+        const existingUser = await Users.findOne({ where: { email } });
 
         if (existingUser) {
             return res.status(400).json({
@@ -21,7 +22,7 @@ exports.register = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const user = await User.create({
+        const users = await Users.create({
             uuid: uuidv4(),
             uuid_role,
             name,
@@ -32,7 +33,7 @@ exports.register = async (req, res) => {
         res.status(201).json({
             status: 'success',
             message: 'User registered successfully',
-            data: user
+            data: users
         });
     } catch (error) {
         res.status(500).json({
@@ -46,15 +47,15 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const user = await User.scope('withPassword').findOne({ where: { email } });
-        if (!user) {
+        const users = await Users.findOne({ where: { email } });
+        if (!users) {
             return res.status(404).json({
                 status: 'error',
                 message: 'User not found'
             });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(password, users.password);
         if (!isMatch) {
             return res.status(401).json({
                 status: 'error',
@@ -64,8 +65,8 @@ exports.login = async (req, res) => {
 
         const accessToken = jwt.sign(
             {
-                uuid: user.uuid,
-                uuid_role: user.uuid_role,
+                uuid: users.uuid,
+                uuid_role: users.uuid_role,
             },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRATION || '1440m' }

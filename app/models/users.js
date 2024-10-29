@@ -1,7 +1,7 @@
 // app/models
 
 module.exports = (sequelize, DataTypes) => {
-    const Role = sequelize.define('Role', {
+    const Users = sequelize.define('users', {
         // id: {
         //     type: DataTypes.INTEGER,
         //     autoIncrement: true,
@@ -14,15 +14,28 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             primaryKey: true
         },
+        uuid_role: {
+            type: DataTypes.UUID,
+            allowNull: false
+        },
         name: {
             type: DataTypes.STRING,
             allowNull: false
         },
-        created_at: {
+        email: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true
+        },
+        password: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        createdAt: {
             type: DataTypes.DATE,
             allowNull: true
         },
-        updated_at: {
+        updatedAt: {
             type: DataTypes.DATE,
             allowNull: true
         },
@@ -34,17 +47,24 @@ module.exports = (sequelize, DataTypes) => {
         defaultScope: {
             attributes: { exclude: [
                 // 'id',
-                // 'uuid'
+                // 'uuid',
+                // 'uuid_role',
+                // 'password'
             ] }
         },
+        scopes: {
+            withPassword: {
+                attributes: {}
+            }
+        },
         sequelize,
-        modelName: 'Role',
+        modelName: 'Users',
         paranoid: true // Soft Delete
     });
 
-    Role.associate = function(models) {
-        Role.hasMany(models.User, { foreignKey: 'uuid_role', as: 'users' });
+    Users.associate = function(models) {
+        Users.belongsTo(models.Roles, { foreignKey: 'uuid_role', as: 'roles' });
     };
 
-    return Role;
+    return Users;
 };

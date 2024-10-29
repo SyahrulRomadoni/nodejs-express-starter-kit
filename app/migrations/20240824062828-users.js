@@ -20,7 +20,7 @@ module.exports = {
                 primaryKey: true
             },
             uuid_role: {
-                type: Sequelize.STRING,
+                type: Sequelize.UUID,
                 allowNull: false
             },
             name: {
@@ -36,15 +36,15 @@ module.exports = {
                 type: Sequelize.STRING,
                 allowNull: false
             },
-            created_at: {
+            createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE
             },
-            updated_at: {
+            updatedAt: {
                 allowNull: false,
                 type: Sequelize.DATE
             },
-            deleted_at: {
+            deletedAt: {
                 allowNull: true,
                 type: Sequelize.DATE
             }
