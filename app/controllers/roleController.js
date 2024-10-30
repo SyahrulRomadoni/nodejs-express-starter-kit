@@ -9,7 +9,7 @@ exports.index = async (req, res) => {
     const offset = (page - 1) * limit;
 
     try {
-        const { count, rows: models } = await Roles.findAndCountAll({
+        const { count, rows: models } = await Roles.scope('defaultScope').findAndCountAll({
             where: { deletedAt: null },
             // attributes: ['uuid', 'name'],
             limit: limit,
@@ -39,7 +39,7 @@ exports.read = async (req, res) => {
     const { uuid } = req.params;
 
     try {
-        const models = await Roles.findOne({ where: { uuid, deletedAt: null } });
+        const models = await Roles.scope('defaultScope').findOne({ where: { uuid, deletedAt: null } });
 
         if (!models) {
             return res.status(404).json({
@@ -69,7 +69,7 @@ exports.updated = async (req, res) => {
     const { name } = req.body;
 
     try {
-        const models = await Roles.findOne({ where: { uuid, deletedAt: null } });
+        const models = await Roles.scope('defaultScope').findOne({ where: { uuid, deletedAt: null } });
 
         if (!models) {
             return res.status(404).json({
@@ -101,7 +101,7 @@ exports.deleted = async (req, res) => {
     const { uuid } = req.params;
 
     try {
-        const models = await Roles.findOne({ where: { uuid, deletedAt: null } });
+        const models = await Roles.scope('defaultScope').findOne({ where: { uuid, deletedAt: null } });
 
         if (!models) {
             return res.status(404).json({

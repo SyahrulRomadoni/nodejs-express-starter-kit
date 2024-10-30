@@ -58,7 +58,7 @@ exports.index = async (req, res) => {
     const offset = (page - 1) * limit;
 
     try {
-        const { count, rows: models } = await Users.findAndCountAll({
+        const { count, rows: models } = await Users.scope('defaultScope').findAndCountAll({
             where: { deletedAt: null },
             // attributes: ['uuid', 'uuid_role', 'name', 'email'],
             include: [
@@ -95,7 +95,7 @@ exports.read = async (req, res) => {
     const { uuid } = req.params;
 
     try {
-        const models = await Users.findOne({
+        const models = await Users.scope('defaultScope').findOne({
             where: { uuid, deletedAt: null },
             include: [
                 {
@@ -137,7 +137,7 @@ exports.updated = async (req, res) => {
     const { uuid_role, name, email, password } = req.body;
 
     try {
-        const models = await Users.findOne({
+        const models = await Users.scope('defaultScope').findOne({
             where: { uuid, deletedAt: null },
             include: [
                 {
@@ -186,7 +186,7 @@ exports.deleted = async (req, res) => {
     const { uuid } = req.params;
 
     try {
-        const models = await Users.findOne({ where: { uuid, deletedAt: null } });
+        const models = await Users.scope('defaultScope').findOne({ where: { uuid, deletedAt: null } });
 
         if (!models) {
             return res.status(404).json({
