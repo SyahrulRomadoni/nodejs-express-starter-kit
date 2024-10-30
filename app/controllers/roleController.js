@@ -48,13 +48,11 @@ exports.read = async (req, res) => {
             });
         }
 
+        const responseData = { uuid: models.uuid, name: models.name };
         res.status(200).json({
             status: 'success',
             message: 'Data successfully found',
-            data: {
-                uuid: models.uuid,
-                name: models.name
-            }
+            data: responseData
         });
     } catch (error) {
         res.status(500).json({
@@ -81,13 +79,11 @@ exports.updated = async (req, res) => {
         models.name = name || models.name;
         await models.save();
 
+        const responseData = { uuid: models.uuid, name: models.name };
         res.status(200).json({
             status: 'success',
             message: 'Data updated successfully',
-            data: {
-                uuid: models.uuid,
-                name: models.name
-            }
+            data: responseData
         });
     } catch (error) {
         res.status(500).json({

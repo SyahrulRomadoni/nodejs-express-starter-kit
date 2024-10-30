@@ -113,16 +113,11 @@ exports.read = async (req, res) => {
             });
         }
 
+        const responseData = { uuid: models.uuid, uuid_role: models.uuid_role, name: models.name, email: models.email, roles: models.roles};
         res.status(200).json({
             status: 'success',
             message: 'Data successfully found',
-            data: {
-                uuid: models.uuid,
-                uuid_role: models.uuid_role,
-                name: models.name,
-                email: models.email,
-                roles: models.roles
-            }
+            data: responseData
         });
     } catch (error) {
         res.status(500).json({
@@ -163,16 +158,11 @@ exports.updated = async (req, res) => {
         }
         await models.save();
 
+        const responseData = { uuid: models.uuid, uuid_role: models.uuid_role, name: models.name, email: models.email, roles: models.roles};
         res.status(200).json({
             status: 'success',
             message: 'Data updated successfully',
-            data: {
-                uuid: models.uuid,
-                uuid_role: models.uuid_role,
-                name: models.name,
-                email: models.email,
-                roles: models.roles
-            }
+            data: responseData
         });
     } catch (error) {
         res.status(500).json({
