@@ -3,8 +3,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
-const db = require('../models');
-const { Users } = db;
+const { Users } = require('../models');
 const { addToBlacklist } = require('../middlewares/tokenBlacklist');
 
 exports.register = async (req, res) => {
