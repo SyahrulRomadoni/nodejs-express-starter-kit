@@ -9,18 +9,19 @@ exports.index = async (req, res) => {
     const offset = (page - 1) * limit;
 
     try {
-        const { count, rows: roles } = await Roles.findAndCountAll({
+        const { count, rows: models } = await Roles.findAndCountAll({
             where: { deletedAt: null },
-            attributes: ['name'],
+            // attributes: ['uuid', 'name'],
             limit: limit,
             offset: offset
         });
 
+        const responseData = models.map(({ uuid, name }) => ({ uuid, name }));
         res.status(200).json({
             status: 'success',
             message: 'Data successfully found',
             data: {
-                roles: roles,
+                data: responseData,
                 totalItems: count,
                 totalPages: Math.ceil(count / limit),
                 currentPage: page
@@ -38,12 +39,9 @@ exports.read = async (req, res) => {
     const { uuid } = req.params;
 
     try {
-        const roles = await Roles.findOne({
-            where: { uuid, deletedAt: null },
-            attributes: ['name'],
-        });
+        const models = await Roles.findOne({ where: { uuid, deletedAt: null } });
 
-        if (!roles) {
+        if (!models) {
             return res.status(404).json({
                 status: 'error',
                 message: 'Data not found or Data is deleted'
@@ -53,7 +51,10 @@ exports.read = async (req, res) => {
         res.status(200).json({
             status: 'success',
             message: 'Data successfully found',
-            data: roles
+            data: {
+                uuid: models.uuid,
+                name: models.name
+            }
         });
     } catch (error) {
         res.status(500).json({
@@ -65,31 +66,28 @@ exports.read = async (req, res) => {
 
 exports.updated = async (req, res) => {
     const { uuid } = req.params;
-    const { name, email, password } = req.body;
+    const { name } = req.body;
 
     try {
-        const roles = await Roles.findOne({
-            where: { uuid, deletedAt: null },
-        });
+        const models = await Roles.findOne({ where: { uuid, deletedAt: null } });
 
-        if (!roles) {
+        if (!models) {
             return res.status(404).json({
                 status: 'error',
                 message: 'Data not found or Data is deleted'
             });
         }
 
-        roles.name = name || roles.name;
-        if (password) {
-            roles.password = await bcrypt.hash(password, 10);
-        }
-
-        await roles.save();
+        models.name = name || models.name;
+        await models.save();
 
         res.status(200).json({
             status: 'success',
             message: 'Data updated successfully',
-            data: roles
+            data: {
+                uuid: models.uuid,
+                name: models.name
+            }
         });
     } catch (error) {
         res.status(500).json({
@@ -103,16 +101,16 @@ exports.deleted = async (req, res) => {
     const { uuid } = req.params;
 
     try {
-        const roles = await Roles.findOne({ where: { uuid, deletedAt: null } });
+        const models = await Roles.findOne({ where: { uuid, deletedAt: null } });
 
-        if (!roles) {
+        if (!models) {
             return res.status(404).json({
                 status: 'error',
                 message: 'Data not found or Data is deleted'
             });
         }
 
-        await roles.destroy();
+        await models.destroy();
 
         res.status(200).json({
             status: 'success',

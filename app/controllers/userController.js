@@ -2,6 +2,7 @@
 
 const bcrypt = require('bcryptjs');
 const { Users, Roles } = require('../models');
+const roles = require('../models/roles');
 
 exports.getCurrent = async (req, res) => {
     const { uuid } = req.user;
@@ -14,19 +15,18 @@ exports.getCurrent = async (req, res) => {
     }
 
     try {
-        const users = await Users.findOne({
+        const models = await Users.scope('defaultScope').findOne({
             where: { uuid, deletedAt: null },
-            attributes: ['name', 'email',],
             include: [
                 {
                     model: Roles,
                     as: 'roles',
                     attributes: ['name']
                 }
-            ],
+            ]
         });
 
-        if (!users) {
+        if (!models) {
             return res.status(404).json({
                 status: 'error',
                 message: 'Data not found or Data is deleted'
@@ -36,7 +36,13 @@ exports.getCurrent = async (req, res) => {
         res.status(200).json({
             status: 'success',
             message: 'Data successfully found',
-            data: users
+            data: {
+                uuid: models.uuid,
+                uuid_role: models.uuid_role,
+                name: models.name,
+                email: models.email,
+                roles: models.roles
+            }
         });
     } catch (error) {
         res.status(500).json({
@@ -52,9 +58,9 @@ exports.index = async (req, res) => {
     const offset = (page - 1) * limit;
 
     try {
-        const { count, rows: users } = await Users.findAndCountAll({
+        const { count, rows: models } = await Users.findAndCountAll({
             where: { deletedAt: null },
-            attributes: ['name', 'email',],
+            // attributes: ['uuid', 'uuid_role', 'name', 'email'],
             include: [
                 {
                     model: Roles,
@@ -66,11 +72,12 @@ exports.index = async (req, res) => {
             offset: offset
         });
 
+        const responseData = models.map(({ uuid, uuid_role, name, email, roles }) => ({ uuid, uuid_role, name, email, roles }));
         res.status(200).json({
             status: 'success',
             message: 'Data successfully found',
             data: {
-                users: users,
+                data: responseData,
                 totalItems: count,
                 totalPages: Math.ceil(count / limit),
                 currentPage: page
@@ -88,9 +95,8 @@ exports.read = async (req, res) => {
     const { uuid } = req.params;
 
     try {
-        const users = await Users.findOne({
+        const models = await Users.findOne({
             where: { uuid, deletedAt: null },
-            attributes: ['name', 'email',],
             include: [
                 {
                     model: Roles,
@@ -100,7 +106,7 @@ exports.read = async (req, res) => {
             ],
         });
 
-        if (!users) {
+        if (!models) {
             return res.status(404).json({
                 status: 'error',
                 message: 'Data not found or Data is deleted'
@@ -110,7 +116,13 @@ exports.read = async (req, res) => {
         res.status(200).json({
             status: 'success',
             message: 'Data successfully found',
-            data: users
+            data: {
+                uuid: models.uuid,
+                uuid_role: models.uuid_role,
+                name: models.name,
+                email: models.email,
+                roles: models.roles
+            }
         });
     } catch (error) {
         res.status(500).json({
@@ -122,32 +134,45 @@ exports.read = async (req, res) => {
 
 exports.updated = async (req, res) => {
     const { uuid } = req.params;
-    const { name, email, password } = req.body;
+    const { uuid_role, name, email, password } = req.body;
 
     try {
-        const users = await Users.findOne({
+        const models = await Users.findOne({
             where: { uuid, deletedAt: null },
+            include: [
+                {
+                    model: Roles,
+                    as: 'roles',
+                    attributes: ['name']
+                }
+            ]
         });
 
-        if (!users) {
+        if (!models) {
             return res.status(404).json({
                 status: 'error',
                 message: 'Data not found or Data is deleted'
             });
         }
 
-        users.name = name || users.name;
-        users.email = email || users.email;
+        models.uuid_role = uuid_role || models.uuid_role;
+        models.name = name || models.name;
+        models.email = email || models.email;
         if (password) {
-            users.password = await bcrypt.hash(password, 10);
+            models.password = await bcrypt.hash(password, 10);
         }
-
-        await users.save();
+        await models.save();
 
         res.status(200).json({
             status: 'success',
             message: 'Data updated successfully',
-            data: users
+            data: {
+                uuid: models.uuid,
+                uuid_role: models.uuid_role,
+                name: models.name,
+                email: models.email,
+                roles: models.roles
+            }
         });
     } catch (error) {
         res.status(500).json({
@@ -161,16 +186,16 @@ exports.deleted = async (req, res) => {
     const { uuid } = req.params;
 
     try {
-        const users = await Users.findOne({ where: { uuid, deletedAt: null } });
+        const models = await Users.findOne({ where: { uuid, deletedAt: null } });
 
-        if (!users) {
+        if (!models) {
             return res.status(404).json({
                 status: 'error',
                 message: 'Data not found or Data is deleted'
             });
         }
 
-        await users.destroy();
+        await models.destroy();
 
         res.status(200).json({
             status: 'success',

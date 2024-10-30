@@ -34,7 +34,10 @@ module.exports = (sequelize, DataTypes) => {
         defaultScope: {
             attributes: { exclude: [
                 // 'id',
-                // 'uuid'
+                // 'uuid',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
             ] }
         },
         sequelize,

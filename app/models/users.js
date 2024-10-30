@@ -49,7 +49,10 @@ module.exports = (sequelize, DataTypes) => {
                 // 'id',
                 // 'uuid',
                 // 'uuid_role',
-                // 'password'
+                // 'password',
+                'createdAt',
+                'updatedAt',
+                'deletedAt'
             ] }
         },
         scopes: {
