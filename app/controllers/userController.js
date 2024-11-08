@@ -2,7 +2,6 @@
 
 const bcrypt = require('bcryptjs');
 const { Users, Roles } = require('../models');
-const roles = require('../models/roles');
 
 exports.getCurrent = async (req, res) => {
     const { uuid } = req.user;
