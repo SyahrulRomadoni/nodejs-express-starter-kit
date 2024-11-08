@@ -1,4 +1,4 @@
-// app/config
+// app/controllers
 
 const bcrypt = require('bcryptjs');
 const { Users, Roles } = require('../models');
