@@ -23,7 +23,7 @@ npx sequelize-cli db:seed --seed 20240824062807-users.js
 npx sequelize-cli model:generate --name users --attributes name:string,email:string,password:string,role:string
 
 # Make JWT Secret
-node generate-key.js
+node generate-secret.js
 
 ## Library ##
 - express untuk membuat server web.
