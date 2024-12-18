@@ -1,2 +1,2 @@
 # NodeJs-Express-Starter-Kit
-node_js_express_starter_kit
+Node Js Express Starter Kit is perfect for developers who have previously used the Laravel Framework or similar Framework models ORM and MVC, and is easy to modify according to the developer's wishes and needs.
