@@ -74,7 +74,10 @@ exports.login = async (req, res) => {
         res.json({
             status: 'success',
             message: 'Logged in successfully',
-            token: accessToken
+            data: {
+                expired: process.env.JWT_EXPIRESIN || '1440m',
+                token: accessToken
+            }
         });
     } catch (error) {
         res.status(500).json({
