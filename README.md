@@ -8,32 +8,33 @@ node app.js / npm run dev
 npm install
 
 ## Structure ##
+```plaintext
 Project/
-  ├── app/
-  │   ├── config/
-  │   │   └── config.js
-  │   ├── controller/
-  │   │   ├── authController.js
-  │   │   ├── roleController.js
-  │   │   └── userController.js
-  │   ├── middlewares/
-  │   │   ├── authMiddleware.js
-  │   │   └── tokenBlackList.js
-  │   ├── models/
-  │   │   ├── index.js
-  │   │   ├── roles.js
-  │   │   └── users.js
-  │   ├── routes/
-  │   │   ├── authRoutes.js
-  │   │   ├── roleRoutes.js
-  │   │   └── userRoutes.js
-  │   └── seeders/
-  │       ├── 20240824062807-users.js
-  │       └── 20240825024126-roles.js
-  ├── .env.example
-  ├── app.js
-  ├── generate-secret.js
-  └── package.json
+├── app/
+│   ├── config/
+│   │   └── config.js
+│   ├── controller/
+│   │   ├── authController.js
+│   │   ├── roleController.js
+│   │   └── userController.js
+│   ├── middlewares/
+│   │   ├── authMiddleware.js
+│   │   └── tokenBlackList.js
+│   ├── models/
+│   │   ├── index.js
+│   │   ├── roles.js
+│   │   └── users.js
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   ├── roleRoutes.js
+│   │   └── userRoutes.js
+│   └── seeders/
+│       ├── 20240824062807-users.js
+│       └── 20240825024126-roles.js
+├── .env.example
+├── app.js
+├── generate-secret.js
+└── package.json
 
 ## Sequelize ##
 // Make Migration
