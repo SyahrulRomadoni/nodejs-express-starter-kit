@@ -5,6 +5,7 @@ Node Js Express Starter Kit is perfect for developers who have previously used t
 ```plaintext
 npm run dev
 ```
+OR
 ```plaintext
 node app.js
 ```
