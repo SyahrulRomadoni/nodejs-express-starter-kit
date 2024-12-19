@@ -39,3 +39,4 @@ npm install express jsonwebtoken bcryptjs dotenv sequelize sequelize-cli mysql2 
 npx sequelize-cli init
 npm install -g nodemon
 npm install --save-dev nodemon
+npm install cors
