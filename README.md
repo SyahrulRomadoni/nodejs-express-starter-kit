@@ -56,7 +56,7 @@ npx sequelize-cli seed:generate --name users
 npx sequelize-cli db:seed:all
 ```
 
-//Sedeer One Run
+// Sedeer One Run
 ```plaintext
 npx sequelize-cli db:seed --seed 20240825024126-roles.js
 ```
