@@ -35,6 +35,7 @@ Project/
 ├── app.js
 ├── generate-secret.js
 └── package.json
+```
 
 ## Sequelize ##
 // Make Migration
