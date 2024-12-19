@@ -31,7 +31,8 @@ app.get('/', (req, res) => {
     res.send('Welcome to the API Nodejs Express Starter Kit');
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    // console.log(`Server is running on port ${PORT}`);
+const APP_PORT = process.env.APP_PORT || 3000;
+const APP_URL = process.env.APP_URL || "//localhost:";
+app.listen(APP_PORT, () => {
+    console.log(`Server is running on port ${APP_URL}:${APP_PORT}`);
 });
