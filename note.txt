@@ -33,6 +33,7 @@ node generate-secret.js
 - sequelize untuk ORM.
 - sequelize-cli untuk migrasi dan seeder.
 - mysql2 atau pg dan pg-hstore untuk koneksi MySQL atau PostgreSQL.
+- CORS
 
 npm init -y
 npm install express jsonwebtoken bcryptjs dotenv sequelize sequelize-cli mysql2 pg pg-hstore
