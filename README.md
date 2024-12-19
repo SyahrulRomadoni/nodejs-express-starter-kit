@@ -39,24 +39,40 @@ Project/
 
 ## Sequelize ##
 // Make Migration
+```plaintext
 npx sequelize-cli migration:generate --name users
+```
 // Run Migration
+```plaintext
 npx sequelize-cli db:migrate
+```
 
 // Make Seeder
+```plaintext
 npx sequelize-cli seed:generate --name users
+```
 // Run Seeder
+```plaintext
 npx sequelize-cli db:seed:all
+```
 
 //Sedeer One Run
+```plaintext
 npx sequelize-cli db:seed --seed 20240825024126-roles.js
+```
+```plaintext
 npx sequelize-cli db:seed --seed 20240824062807-users.js
+```
 
 // Make Model and Migration
+```plaintext
 npx sequelize-cli model:generate --name users --attributes name:string,email:string,password:string,role:string
+```
 
 # Make JWT Secret
+```plaintext
 node generate-secret.js
+```
 
 ## Library ##
 - express untuk membuat server web.
