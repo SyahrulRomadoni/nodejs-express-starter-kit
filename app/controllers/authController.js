@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 const { Users } = require('../models');
-const { addToBlacklist } = require('../middlewares/tokenBlackList');
+const { addToBlacklist, isBlacklisted } = require('../middlewares/tokenBlackList');
 
 exports.register = async (req, res) => {
     const { uuid_role, name, email, password } = req.body;
@@ -98,5 +98,31 @@ exports.logout = (req, res) => {
     res.json({
         status: 'success',
         message: 'Logged out successfully'
+    });
+};
+
+exports.checkToken = (req, res) => {
+    const { token } = req.body;
+    
+    if (isBlacklisted(token)) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'Token expired'
+        });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Token is not valid'
+            });
+        }
+        
+        return res.status(200).json({
+            status: 'success',
+            message: 'Token is valid',
+            // data: decoded
+        });
     });
 };
