@@ -90,6 +90,75 @@ exports.index = async (req, res) => {
     }
 };
 
+exports.create = async (req, res) => {
+    const { uuid_role, name, email, password } = req.body;
+
+    // Validasi Body
+    const fields = { uuid_role, name, email, password };
+    for (const [key, value] of Object.entries(fields)) {
+        if (!value) {
+            return res.status(400).json({
+                status: 'error',
+                message: `${key} is required`
+            });
+        }
+    }
+
+    try {
+        // cek format uuid
+        const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+        if (!uuidRegex.test(uuid_role)) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Invalid uuid_role format'
+            });
+        }
+        // Cek apakah role sudah ada di database
+        const role = await Roles.findOne({ where: { uuid: uuid_role } });
+        if (!role) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'Role not found'
+            });
+        }
+        
+        // Cek apakah email sudah ada di database
+        const existingUser = await Users.findOne({ where: { email } });
+        if (existingUser) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Email already exists'
+            });
+        }
+
+        const models = new Users();
+        models.uuid_role = uuid_role;
+        models.name = name;
+        models.email = email;
+        models.password = await bcrypt.hash(password, 10);
+        await models.save();
+
+        const responseData = {
+            uuid: models.uuid,
+            uuid_role: models.uuid_role,
+            name: models.name,
+            email: models.email,
+            roles: models.roles
+        };
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Data saved successfully',
+            data: responseData
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'error',
+            message: error.message
+        });
+    }
+};
+
 exports.read = async (req, res) => {
     const { uuid } = req.params;
 
@@ -130,7 +199,53 @@ exports.updated = async (req, res) => {
     const { uuid } = req.params;
     const { uuid_role, name, email, password } = req.body;
 
+    // Validasi uuid
+    if (!uuid) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'UUID is required'
+        });
+    }
+
+    // Validasi Body
+    const fields = { uuid_role, name, email, password };
+    for (const [key, value] of Object.entries(fields)) {
+        if (!value) {
+            return res.status(400).json({
+                status: 'error',
+                message: `${key} is required`
+            });
+        }
+    }
+
     try {
+        // cek format uuid
+        const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+        if (!uuidRegex.test(uuid_role)) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Invalid uuid_role format'
+            });
+        }
+        // Cek apakah role sudah ada di database
+        const role = await Roles.findOne({ where: { uuid: uuid_role } });
+        if (!role) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'Role not found'
+            });
+        }
+        
+        // Cek apakah email sudah ada di database
+        const existingUser = await Users.findOne({ where: { email } });
+        if (existingUser) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Email already exists'
+            });
+        }
+
+        // Carikan data yang akan diupdate
         const models = await Users.scope('defaultScope').findOne({
             where: { uuid, deletedAt: null },
             include: [

@@ -1,6 +1,5 @@
 // app/controllers
 
-const bcrypt = require('bcryptjs');
 const { Roles } = require('../models');
 
 exports.index = async (req, res) => {
@@ -26,6 +25,41 @@ exports.index = async (req, res) => {
                 totalPages: Math.ceil(count / limit),
                 currentPage: page
             }
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'error',
+            message: error.message
+        });
+    }
+};
+
+exports.create = async (req, res) => {
+    const { name } = req.body;
+
+    // Validasi Body
+    const fields = { name };
+    for (const [key, value] of Object.entries(fields)) {
+        if (!value) {
+            return res.status(400).json({
+                status: 'error',
+                message: `${key} is required`
+            });
+        }
+    }
+
+    try {
+        // Carikan data yang akan diupdate
+        const models = new Roles();
+
+        models.name = name || models.name;
+        await models.save();
+
+        const responseData = { uuid: models.uuid, name: models.name };
+        res.status(200).json({
+            status: 'success',
+            message: 'Data updated successfully',
+            data: responseData
         });
     } catch (error) {
         res.status(500).json({
@@ -66,7 +100,27 @@ exports.updated = async (req, res) => {
     const { uuid } = req.params;
     const { name } = req.body;
 
+    // Validasi uuid
+    if (!uuid) {
+        return res.status(400).json({
+            status: 'error',
+            message: 'UUID is required'
+        });
+    }
+
+    // Validasi Body
+    const fields = { name };
+    for (const [key, value] of Object.entries(fields)) {
+        if (!value) {
+            return res.status(400).json({
+                status: 'error',
+                message: `${key} is required`
+            });
+        }
+    }
+
     try {
+        // Carikan data yang akan diupdate
         const models = await Roles.scope('defaultScope').findOne({ where: { uuid, deletedAt: null } });
 
         if (!models) {
