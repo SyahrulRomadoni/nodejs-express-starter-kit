@@ -123,7 +123,7 @@ exports.create = async (req, res) => {
         }
         
         // Cek apakah email sudah ada di database
-        const existingUser = await Users.findOne({ where: { email } });
+        const existingUser = await Users.findOne({ where: { email: email } });
         if (existingUser) {
             return res.status(400).json({
                 status: 'error',
@@ -164,7 +164,7 @@ exports.read = async (req, res) => {
 
     try {
         const models = await Users.scope('defaultScope').findOne({
-            where: { uuid, deletedAt: null },
+            where: { uuid: uuid, deletedAt: null },
             include: [
                 {
                     model: Roles,
@@ -237,12 +237,16 @@ exports.updated = async (req, res) => {
         }
         
         // Cek apakah email sudah ada di database
-        const existingUser = await Users.findOne({ where: { email } });
-        if (existingUser) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Email already exists'
-            });
+        const emailLama = await Users.findOne({ where: { uuid: uuid } });
+        const emailBaru = await Users.findOne({ where: { email: email } });
+        if (emailBaru) {
+            if (emailLama.email == emailBaru.email) {
+            } else {
+                return res.status(400).json({
+                    status: 'error',
+                    message: 'Email already exists'
+                });
+            }
         }
 
         // Carikan data yang akan diupdate

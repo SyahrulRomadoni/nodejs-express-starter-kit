@@ -62,7 +62,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         sequelize,
         modelName: 'Users',
-        paranoid: true // Soft Delete
+        // paranoid: true
     });
 
     Users.associate = function(models) {
