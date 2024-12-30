@@ -208,7 +208,7 @@ exports.updated = async (req, res) => {
     }
 
     // Validasi Body
-    const fields = { uuid_role, name, email, password };
+    const fields = { uuid_role, name, email };
     for (const [key, value] of Object.entries(fields)) {
         if (!value) {
             return res.status(400).json({
