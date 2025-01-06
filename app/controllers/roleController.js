@@ -15,6 +15,7 @@ exports.index = async (req, res) => {
         const { count, rows: models } = await Roles.scope('defaultScope').findAndCountAll({
             where: { deletedAt: null },
             // attributes: ['uuid', 'name'],
+            order: [['name', 'ASC']],
 
             // kalau mau pake limit data
             limit: limit !== null ? limit : undefined,

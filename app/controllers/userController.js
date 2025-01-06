@@ -71,6 +71,7 @@ exports.index = async (req, res) => {
                     attributes: ['name']
                 }
             ],
+            order: [['name', 'ASC']],
 
             // kalau mau pake limit data
             // limit: limit,
