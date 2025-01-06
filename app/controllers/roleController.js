@@ -3,16 +3,24 @@
 const { Roles } = require('../models');
 
 exports.index = async (req, res) => {
-    const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 10;
-    const offset = (page - 1) * limit;
+    // kalau mau pake limit data
+    // const limit = parseInt(req.query.limit, 10) || 100;
+    const limit = req.query.limit ? parseInt(req.query.limit, 10) : null;
+
+    // Kalo mau pake pagination
+    // const page = parseInt(req.query.page, 10) || 1;
+    // const offset = (page - 1) * limit;
 
     try {
         const { count, rows: models } = await Roles.scope('defaultScope').findAndCountAll({
             where: { deletedAt: null },
             // attributes: ['uuid', 'name'],
-            limit: limit,
-            offset: offset
+
+            // kalau mau pake limit data
+            limit: limit !== null ? limit : undefined,
+            
+            // kalau mau pake pagination
+            // offset: offset
         });
 
         const responseData = models.map(({ uuid, name }) => ({ uuid, name }));
@@ -21,9 +29,14 @@ exports.index = async (req, res) => {
             message: 'Data successfully found',
             data: {
                 data: responseData,
-                totalItems: count,
-                totalPages: Math.ceil(count / limit),
-                currentPage: page
+                total_all_data: count,
+
+                // kalau mau pake limit data
+                // limit_data: limit,
+                limit: limit !== null ? limit : undefined,
+
+                // kalau mau pake pagination
+                // current_page: page
             }
         });
     } catch (error) {
