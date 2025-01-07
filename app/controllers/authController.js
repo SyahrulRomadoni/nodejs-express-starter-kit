@@ -13,7 +13,7 @@ exports.register = async (req, res) => {
         const existingUser = await Users.findOne({ where: { email } });
 
         if (existingUser) {
-            return res.status(400).json({
+            return res.json({
                 status: 'error',
                 message: 'Email already exists'
             });
@@ -29,13 +29,13 @@ exports.register = async (req, res) => {
             password: hashedPassword
         });
 
-        res.status(201).json({
+        res.json({
             status: 'success',
             message: 'User registered successfully',
             data: users
         });
     } catch (error) {
-        res.status(500).json({
+        res.json({
             status: 'error',
             message: error.message
         });
@@ -48,7 +48,7 @@ exports.login = async (req, res) => {
     try {
         const users = await Users.findOne({ where: { email } });
         if (!users) {
-            return res.status(404).json({
+            return res.json({
                 status: 'error',
                 message: 'User not found'
             });
@@ -56,7 +56,7 @@ exports.login = async (req, res) => {
 
         const isMatch = await bcrypt.compare(password, users.password);
         if (!isMatch) {
-            return res.status(401).json({
+            return res.json({
                 status: 'error',
                 message: 'Incorrect password'
             });
@@ -80,7 +80,7 @@ exports.login = async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({
+        res.json({
             status: 'error',
             message: error.message
         });
@@ -105,7 +105,7 @@ exports.checkToken = (req, res) => {
     const { token } = req.body;
     
     if (isBlacklisted(token)) {
-        return res.status(400).json({
+        return res.json({
             status: 'error',
             message: 'Token expired'
         });
@@ -113,13 +113,13 @@ exports.checkToken = (req, res) => {
 
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) {
-            return res.status(400).json({
+            return res.json({
                 status: 'error',
                 message: 'Token is not valid'
             });
         }
         
-        return res.status(200).json({
+        return res.json({
             status: 'success',
             message: 'Token is valid',
             // data: decoded

@@ -7,7 +7,7 @@ exports.getCurrent = async (req, res) => {
     const { uuid } = req.user;
 
     if (!uuid) {
-        return res.status(400).json({
+        return res.json({
             status: 'error',
             message: 'User UUID is required'
         });
@@ -26,13 +26,13 @@ exports.getCurrent = async (req, res) => {
         });
 
         if (!models) {
-            return res.status(404).json({
+            return res.json({
                 status: 'error',
                 message: 'Data not found or Data is deleted'
             });
         }
 
-        res.status(200).json({
+        res.json({
             status: 'success',
             message: 'Data successfully found',
             data: {
@@ -44,7 +44,7 @@ exports.getCurrent = async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({
+        res.json({
             status: 'error',
             message: error.message
         });
@@ -82,7 +82,7 @@ exports.index = async (req, res) => {
         });
 
         const responseData = models.map(({ uuid, uuid_role, name, email, roles }) => ({ uuid, uuid_role, name, email, roles }));
-        res.status(200).json({
+        res.json({
             status: 'success',
             message: 'Data successfully found',
             data: {
@@ -97,7 +97,7 @@ exports.index = async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({
+        res.json({
             status: 'error',
             message: error.message
         });
@@ -111,7 +111,7 @@ exports.create = async (req, res) => {
     const fields = { uuid_role, name, email, password };
     for (const [key, value] of Object.entries(fields)) {
         if (!value) {
-            return res.status(400).json({
+            return res.json({
                 status: 'error',
                 message: `${key} is required`
             });
@@ -122,7 +122,7 @@ exports.create = async (req, res) => {
         // cek format uuid
         const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
         if (!uuidRegex.test(uuid_role)) {
-            return res.status(400).json({
+            return res.json({
                 status: 'error',
                 message: 'Invalid uuid_role format'
             });
@@ -130,7 +130,7 @@ exports.create = async (req, res) => {
         // Cek apakah role sudah ada di database
         const role = await Roles.findOne({ where: { uuid: uuid_role } });
         if (!role) {
-            return res.status(404).json({
+            return res.json({
                 status: 'error',
                 message: 'Role not found'
             });
@@ -139,7 +139,7 @@ exports.create = async (req, res) => {
         // Cek apakah email sudah ada di database
         const existingUser = await Users.findOne({ where: { email: email } });
         if (existingUser) {
-            return res.status(400).json({
+            return res.json({
                 status: 'error',
                 message: 'Email already exists'
             });
@@ -160,13 +160,13 @@ exports.create = async (req, res) => {
             roles: models.roles
         };
 
-        res.status(200).json({
+        res.json({
             status: 'success',
             message: 'Data saved successfully',
             data: responseData
         });
     } catch (error) {
-        res.status(500).json({
+        res.json({
             status: 'error',
             message: error.message
         });
@@ -189,20 +189,20 @@ exports.read = async (req, res) => {
         });
 
         if (!models) {
-            return res.status(404).json({
+            return res.json({
                 status: 'error',
                 message: 'Data not found or Data is deleted'
             });
         }
 
         const responseData = { uuid: models.uuid, uuid_role: models.uuid_role, name: models.name, email: models.email, roles: models.roles};
-        res.status(200).json({
+        res.json({
             status: 'success',
             message: 'Data successfully found',
             data: responseData
         });
     } catch (error) {
-        res.status(500).json({
+        res.json({
             status: 'error',
             message: error.message
         });
@@ -215,7 +215,7 @@ exports.updated = async (req, res) => {
 
     // Validasi uuid
     if (!uuid) {
-        return res.status(400).json({
+        return res.json({
             status: 'error',
             message: 'UUID is required'
         });
@@ -225,7 +225,7 @@ exports.updated = async (req, res) => {
     const fields = { uuid_role, name, email };
     for (const [key, value] of Object.entries(fields)) {
         if (!value) {
-            return res.status(400).json({
+            return res.json({
                 status: 'error',
                 message: `${key} is required`
             });
@@ -236,7 +236,7 @@ exports.updated = async (req, res) => {
         // cek format uuid
         const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
         if (!uuidRegex.test(uuid_role)) {
-            return res.status(400).json({
+            return res.json({
                 status: 'error',
                 message: 'Invalid uuid_role format'
             });
@@ -244,7 +244,7 @@ exports.updated = async (req, res) => {
         // Cek apakah role sudah ada di database
         const role = await Roles.findOne({ where: { uuid: uuid_role } });
         if (!role) {
-            return res.status(404).json({
+            return res.json({
                 status: 'error',
                 message: 'Role not found'
             });
@@ -256,7 +256,7 @@ exports.updated = async (req, res) => {
         if (emailBaru) {
             if (emailLama.email == emailBaru.email) {
             } else {
-                return res.status(400).json({
+                return res.json({
                     status: 'error',
                     message: 'Email already exists'
                 });
@@ -276,7 +276,7 @@ exports.updated = async (req, res) => {
         });
 
         if (!models) {
-            return res.status(404).json({
+            return res.json({
                 status: 'error',
                 message: 'Data not found or Data is deleted'
             });
@@ -291,13 +291,13 @@ exports.updated = async (req, res) => {
         await models.save();
 
         const responseData = { uuid: models.uuid, uuid_role: models.uuid_role, name: models.name, email: models.email, roles: models.roles};
-        res.status(200).json({
+        res.json({
             status: 'success',
             message: 'Data updated successfully',
             data: responseData
         });
     } catch (error) {
-        res.status(500).json({
+        res.json({
             status: 'error',
             message: error.message
         });
@@ -311,7 +311,7 @@ exports.deleted = async (req, res) => {
         const models = await Users.scope('defaultScope').findOne({ where: { uuid, deletedAt: null } });
 
         if (!models) {
-            return res.status(404).json({
+            return res.json({
                 status: 'error',
                 message: 'Data not found or Data is deleted'
             });
@@ -319,12 +319,12 @@ exports.deleted = async (req, res) => {
 
         await models.destroy();
 
-        res.status(200).json({
+        res.json({
             status: 'success',
             message: 'Data deleted successfully'
         });
     } catch (error) {
-        res.status(500).json({
+        res.json({
             status: 'error',
             message: error.message
         });

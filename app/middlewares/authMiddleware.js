@@ -8,14 +8,14 @@ const authenticateToken = (req, res, next) => {
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
-        return res.status(401).json({
+        return res.json({
             status: 'error',
             message: 'Access token is missing',
         });
     }
 
     if (isBlacklisted(token)) {
-        return res.status(401).json({
+        return res.json({
             status: 'error',
             message: 'Token expired',
         });
@@ -23,7 +23,7 @@ const authenticateToken = (req, res, next) => {
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) {
-            return res.status(403).json({
+            return res.json({
                 status: 'error',
                 message: 'Token verification failed',
             });
