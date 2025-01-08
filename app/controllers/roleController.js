@@ -86,6 +86,14 @@ exports.create = async (req, res) => {
 exports.read = async (req, res) => {
     const { uuid } = req.params;
 
+    // Validasi Parameter
+    if (!uuid) {
+        return res.json({
+            status: 'error',
+            message: 'UUID is required'
+        });
+    }
+
     try {
         const models = await Roles.scope('defaultScope').findOne({ where: { uuid, deletedAt: null } });
 

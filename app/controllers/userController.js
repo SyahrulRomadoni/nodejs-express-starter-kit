@@ -118,6 +118,24 @@ exports.create = async (req, res) => {
         }
     }
 
+    // Validasi email
+    const emailRegex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$/;
+    if (email.length < 5 || !emailRegex.test(email)) {
+        return res.json({
+            status: 'error',
+            message: 'Email must contain only letters, numbers, "@" and ".", and be at least 5 characters long'
+        });
+    }
+
+    // Validasi password
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@#])[a-zA-Z0-9@#]{5,}$/;
+    if (!passwordRegex.test(password)) {
+        return res.json({
+            status: 'error',
+            message: 'Password must contain at least one uppercase letter, one number, one special character (@ or #), and be at least 5 characters long'
+        });
+    }
+
     try {
         // cek format uuid
         const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
@@ -176,6 +194,14 @@ exports.create = async (req, res) => {
 exports.read = async (req, res) => {
     const { uuid } = req.params;
 
+    // Validasi Parameter
+    if (!uuid) {
+        return res.json({
+            status: 'error',
+            message: 'UUID is required'
+        });
+    }
+
     try {
         const models = await Users.scope('defaultScope').findOne({
             where: { uuid: uuid, deletedAt: null },
@@ -213,7 +239,7 @@ exports.updated = async (req, res) => {
     const { uuid } = req.params;
     const { uuid_role, name, email, password } = req.body;
 
-    // Validasi uuid
+    // Validasi Parameter
     if (!uuid) {
         return res.json({
             status: 'error',
@@ -230,6 +256,24 @@ exports.updated = async (req, res) => {
                 message: `${key} is required`
             });
         }
+    }
+
+    // Validasi email
+    const emailRegex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$/;
+    if (email.length < 5 || !emailRegex.test(email)) {
+        return res.json({
+            status: 'error',
+            message: 'Email must contain only letters, numbers, "@" and ".", and be at least 5 characters long'
+        });
+    }
+
+    // Validasi password
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@#])[a-zA-Z0-9@#]{5,}$/;
+    if (!passwordRegex.test(password)) {
+        return res.json({
+            status: 'error',
+            message: 'Password must contain at least one uppercase letter, one number, one special character (@ or #), and be at least 5 characters long'
+        });
     }
 
     try {

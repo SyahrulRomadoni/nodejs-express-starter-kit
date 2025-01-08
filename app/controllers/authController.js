@@ -9,6 +9,35 @@ const { addToBlacklist, isBlacklisted } = require('../middlewares/tokenBlackList
 exports.register = async (req, res) => {
     const { uuid_role, name, email, password } = req.body;
 
+    // Validasi body
+    const fields = { uuid_role, name, email, password };
+    for (const [key, value] of Object.entries(fields)) {
+        if (!value) {
+            return res.json({
+                status: 'error',
+                message: `${key} is required`
+            });
+        }
+    }
+
+    // Validasi email
+    const emailRegex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$/;
+    if (email.length < 5 || !emailRegex.test(email)) {
+        return res.json({
+            status: 'error',
+            message: 'Email must contain only letters, numbers, "@" and ".", and be at least 5 characters long'
+        });
+    }
+
+    // Validasi password
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@#])[a-zA-Z0-9@#]{5,}$/;
+    if (!passwordRegex.test(password)) {
+        return res.json({
+            status: 'error',
+            message: 'Password must contain at least one uppercase letter, one number, one special character (@ or #), and be at least 5 characters long'
+        });
+    }
+
     try {
         const existingUser = await Users.findOne({ where: { email } });
 
@@ -44,6 +73,35 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     const { email, password } = req.body;
+
+    // Validasi body
+    const fields = { email, password };
+    for (const [key, value] of Object.entries(fields)) {
+        if (!value) {
+            return res.json({
+                status: 'error',
+                message: `${key} is required`
+            });
+        }
+    }
+
+    // Validasi email
+    const emailRegex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$/;
+    if (email.length < 5 || !emailRegex.test(email)) {
+        return res.json({
+            status: 'error',
+            message: 'Email must contain only letters, numbers, "@" and ".", and be at least 5 characters long'
+        });
+    }
+
+    // Validasi password
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@#])[a-zA-Z0-9@#]{5,}$/;
+    if (!passwordRegex.test(password)) {
+        return res.json({
+            status: 'error',
+            message: 'Password must contain at least one uppercase letter, one number, one special character (@ or #), and be at least 5 characters long'
+        });
+    }
 
     try {
         const users = await Users.findOne({ where: { email } });
