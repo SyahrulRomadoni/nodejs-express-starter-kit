@@ -86,11 +86,11 @@ node generate-secret.js
 [Starter Kit Frontend React JS](https://github.com/SyahrulRomadoni/reactjs-vite-starter-kit)
 
 ## Library ##
-- express untuk membuat server web.
-- jsonwebtoken untuk otentikasi JWT.
-- bcryptjs untuk hashing password.
-- dotenv untuk memuat variabel lingkungan.
-- sequelize untuk ORM.
-- sequelize-cli untuk migrasi dan seeder.
-- mysql2 atau pg dan pg-hstore untuk koneksi MySQL atau PostgreSQL.
+- express
+- jsonwebtoken
+- bcryptjs
+- dotenv
+- sequelize
+- sequelize-cli
+- mysql2 or pg and pg-hstore for connection to MySQL or PostgreSQL.
 - CORS
