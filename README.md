@@ -82,6 +82,9 @@ npx sequelize-cli model:generate --name users --attributes name:string,email:str
 node generate-secret.js
 ```
 
+## Frontend ##
+[Starter Kit Frontend React JS](https://github.com/SyahrulRomadoni/nodejs-express-starter-kit)
+
 ## Library ##
 - express untuk membuat server web.
 - jsonwebtoken untuk otentikasi JWT.
