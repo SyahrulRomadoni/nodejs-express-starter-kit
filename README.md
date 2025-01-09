@@ -83,7 +83,7 @@ node generate-secret.js
 ```
 
 ## Frontend ##
-[Starter Kit Frontend React JS](https://github.com/SyahrulRomadoni/nodejs-express-starter-kit)
+[Starter Kit Frontend React JS](https://github.com/SyahrulRomadoni/reactjs-vite-starter-kit)
 
 ## Library ##
 - express untuk membuat server web.
