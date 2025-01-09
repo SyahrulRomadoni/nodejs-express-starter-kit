@@ -1,8 +1,8 @@
-## Run App ##
-node app.js / npm run dev
-
 ## Install Library ##
 npm install
+
+## Run App ##
+node app.js / npm run dev
 
 ## Structure ##
 Project/

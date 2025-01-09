@@ -1,6 +1,11 @@
 # NodeJs Express Starter Kit
 Node Js Express Starter Kit is perfect for developers who have previously used the Laravel Framework or similar Framework models ORM and MVC, and is easy to modify according to the developer's wishes and needs.
 
+## Install Library ##
+```plaintext
+npm install
+```
+
 ## Run App ##
 ```plaintext
 npm run dev
@@ -8,11 +13,6 @@ npm run dev
 OR
 ```plaintext
 node app.js
-```
-
-## Install Library ##
-```plaintext
-npm install
 ```
 
 ## Structure ##
