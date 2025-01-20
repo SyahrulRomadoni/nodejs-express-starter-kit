@@ -81,7 +81,21 @@ exports.index = async (req, res) => {
             offset: offset
         });
 
-        const responseData = models.map(({ uuid, uuid_role, name, email, roles }) => ({ uuid, uuid_role, name, email, roles }));
+        // const responseData = models.map(({ uuid, uuid_role, name, email, roles }) => ({ uuid, uuid_role, name, email, roles }));
+        const responseData = models.map((model, index) => ({
+            // ID berurutan (Dummy ID) tapi bisa pakai langsung id dari column di database kalo mau (soal disini saya pakai uuid tidak ada pakai id)
+            id: offset + index + 1,
+            // Data yang diambil dari model database
+            uuid: model.uuid,
+            uuid_role: model.uuid_role,
+            name: model.name,
+            email: model.email,
+            roles: model.roles ? model.roles.name : null
+        }));
+
+        // Kalo mau pake pagination
+        const totalPages = Math.ceil(count / limit);
+
         res.json({
             status: 'success',
             message: 'Data successfully found',
@@ -93,7 +107,8 @@ exports.index = async (req, res) => {
                 limit_data: limit,
 
                 // kalau mau pake pagination
-                current_page: page
+                current_page: page,
+                total_pages: totalPages
             }
         });
     } catch (error) {
