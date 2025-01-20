@@ -57,8 +57,8 @@ exports.index = async (req, res) => {
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : null;
 
     // Kalo mau pake pagination
-    // const page = parseInt(req.query.page, 10) || 1;
-    // const offset = (page - 1) * limit;
+    const page = parseInt(req.query.page, 10) || 1;
+    const offset = (page - 1) * limit;
 
     try {
         const { count, rows: models } = await Users.scope('defaultScope').findAndCountAll({
@@ -78,7 +78,7 @@ exports.index = async (req, res) => {
             limit: limit !== null ? limit : undefined,
 
             // kalau mau pake pagination
-            // offset: offset
+            offset: offset
         });
 
         const responseData = models.map(({ uuid, uuid_role, name, email, roles }) => ({ uuid, uuid_role, name, email, roles }));
@@ -93,7 +93,7 @@ exports.index = async (req, res) => {
                 limit_data: limit,
 
                 // kalau mau pake pagination
-                // current_page: page
+                current_page: page
             }
         });
     } catch (error) {
