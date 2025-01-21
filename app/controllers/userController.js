@@ -283,12 +283,14 @@ exports.updated = async (req, res) => {
     }
 
     // Validasi password
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@#])[a-zA-Z0-9@#]{5,}$/;
-    if (!passwordRegex.test(password)) {
-        return res.json({
-            status: 'error',
-            message: 'Password must contain at least one uppercase letter, one number, one special character (@ or #), and be at least 5 characters long'
-        });
+    if (password) { // Jika password ada isinya maka jalankan validasi ini
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@#])[a-zA-Z0-9@#]{5,}$/;
+        if (!passwordRegex.test(password)) {
+            return res.json({
+                status: 'error',
+                message: 'Password must contain at least one uppercase letter, one number, one special character (@ or #), and be at least 5 characters long'
+            });
+        }
     }
 
     try {
