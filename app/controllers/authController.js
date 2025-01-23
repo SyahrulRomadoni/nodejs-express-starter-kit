@@ -3,7 +3,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
-const { Users } = require('../models');
+const { Users, Roles } = require('../models');
 const { addToBlacklist, isBlacklisted } = require('../middlewares/tokenBlackList');
 
 exports.register = async (req, res) => {
@@ -104,7 +104,17 @@ exports.login = async (req, res) => {
     }
 
     try {
-        const users = await Users.findOne({ where: { email } });
+        // Check user
+        const users = await Users.scope('defaultScope').findOne({
+            where: { email, deletedAt: null },
+            include: [
+                {
+                    model: Roles,
+                    as: 'roles',
+                    attributes: ['name']
+                }
+            ]
+        });
         if (!users) {
             return res.json({
                 status: 'error',
@@ -112,6 +122,7 @@ exports.login = async (req, res) => {
             });
         }
 
+        // Check password
         const isMatch = await bcrypt.compare(password, users.password);
         if (!isMatch) {
             return res.json({
@@ -124,6 +135,9 @@ exports.login = async (req, res) => {
             {
                 uuid: users.uuid,
                 uuid_role: users.uuid_role,
+                name: users.name,
+                email: users.email,
+                roles: users.roles.name
             },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRESIN + 'm' || '1440m' }
