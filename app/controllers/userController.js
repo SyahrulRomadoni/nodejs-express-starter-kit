@@ -119,7 +119,7 @@ exports.index = async (req, res) => {
     }
 };
 
-exports.create = async (req, res) => {
+exports.created = async (req, res) => {
     const { uuid_role, name, email, password } = req.body;
 
     // Validasi Body

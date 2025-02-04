@@ -60,7 +60,7 @@ exports.index = async (req, res) => {
     }
 };
 
-exports.create = async (req, res) => {
+exports.created = async (req, res) => {
     const { name } = req.body;
 
     // Validasi Body
