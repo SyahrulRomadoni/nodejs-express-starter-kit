@@ -28,6 +28,9 @@ Project/
 │   ├── middlewares/
 │   │   ├── authMiddleware.js
 │   │   └── tokenBlackList.js
+│   ├── migrations/
+│   │   ├── 20240824062828-users.js
+│   │   └── 20240825024130-roles.js
 │   ├── models/
 │   │   ├── index.js
 │   │   ├── roles.js
