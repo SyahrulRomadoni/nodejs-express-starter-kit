@@ -1,9 +1,10 @@
+const cors = require('cors');
 const express = require('express');
 const dotenv = require('dotenv');
-const cors = require('cors'); // Import cors
-const authRoutes = require('./app/routes/authRoutes');
-const userRoutes = require('./app/routes/userRoutes');
-const roleRoutes = require('./app/routes/roleRoutes');
+const path = require('path');
+
+// Import routes
+const routes = require('./app/routes');
 
 dotenv.config();
 
@@ -22,11 +23,11 @@ app.use(cors());
 
 app.use(express.json());
 
-// Definisikan routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/roles', roleRoutes);
-
+// Definisikan semua routes
+app.use(routes);
+// Membuat route public untuk bisa mengakses file semua yang ada di folder public
+app.use('/public', express.static(path.join(__dirname, 'public')));
+// Route default Welcome
 app.get('/', (req, res) => {
     res.send('Welcome to the API Nodejs Express Starter Kit');
 });
