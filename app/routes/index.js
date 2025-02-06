@@ -10,7 +10,8 @@ fs.readdirSync(routesPath).forEach((file) => {
     if (file !== 'index.js' && file.endsWith('.js')) {
         const route = require(path.join(routesPath, file));
         // Buat path berdasarkan nama file
-        const routeName = `/api/${file.replace('Routes.js', '').toLowerCase()}`;
+        // const routeName = `/api/${file.replace('Routes.js', '').toLowerCase()}`;
+        const routeName = `/api/${file.replace('Routes.js', '').replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()}`;
 
         router.use(routeName, route);
     }

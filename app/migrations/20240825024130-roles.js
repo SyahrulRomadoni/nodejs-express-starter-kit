@@ -7,10 +7,10 @@ module.exports = {
     async up (queryInterface, Sequelize) {
         await queryInterface.createTable('roles', {
             // id: {
+            //     type: Sequelize.INTEGER,
             //     allowNull: false,
             //     autoIncrement: true,
             //     // primaryKey: true,
-            //     type: Sequelize.INTEGER
             // },
             uuid: {
                 type: Sequelize.UUID,
@@ -24,16 +24,16 @@ module.exports = {
                 allowNull: false
             },
             createdAt: {
+                type: Sequelize.DATE,
                 allowNull: false,
-                type: Sequelize.DATE
             },
             updatedAt: {
+                type: Sequelize.DATE,
                 allowNull: false,
-                type: Sequelize.DATE
             },
             deletedAt: {
+                type: Sequelize.DATE,
                 allowNull: true,
-                type: Sequelize.DATE
             }
         });
     },

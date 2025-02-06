@@ -1,33 +1,33 @@
 // app/models
 
-module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize, Sequelize) => {
     const Roles = sequelize.define('roles', {
         // id: {
-        //     type: DataTypes.INTEGER,
+        //     type: Sequelize.INTEGER,
         //     autoIncrement: true,
         //     allowNull: false,
         //     // primaryKey: true
         // },
         uuid: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
+            type: Sequelize.UUID,
+            defaultValue: Sequelize.UUIDV4,
             allowNull: false,
             primaryKey: true
         },
         name: {
-            type: DataTypes.STRING,
+            type: Sequelize.STRING,
             allowNull: false
         },
         createdAt: {
-            type: DataTypes.DATE,
+            type: Sequelize.DATE,
             allowNull: true
         },
         updatedAt: {
-            type: DataTypes.DATE,
+            type: Sequelize.DATE,
             allowNull: true
         },
         deletedAt: {
-            type: DataTypes.DATE,
+            type: Sequelize.DATE,
             allowNull: true
         }
     }, {

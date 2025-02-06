@@ -34,19 +34,19 @@ module.exports = {
             },
             password: {
                 type: Sequelize.STRING,
-                allowNull: false
+                allowNull: false,
             },
             createdAt: {
+                type: Sequelize.DATE,
                 allowNull: false,
-                type: Sequelize.DATE
             },
             updatedAt: {
+                type: Sequelize.DATE,
                 allowNull: false,
-                type: Sequelize.DATE
             },
             deletedAt: {
+                type: Sequelize.DATE,
                 allowNull: true,
-                type: Sequelize.DATE
             }
         });
     },

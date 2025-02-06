@@ -1,46 +1,46 @@
 // app/models
 
-module.exports = (sequelize, DataTypes) => {
+module.exports = (sequelize, Sequelize) => {
     const Users = sequelize.define('users', {
         // id: {
-        //     type: DataTypes.INTEGER,
+        //     type: Sequelize.INTEGER,
         //     autoIncrement: true,
         //     allowNull: false,
         //     // primaryKey: true
         // },
         uuid: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
+            type: Sequelize.UUID,
+            defaultValue: Sequelize.UUIDV4,
             allowNull: false,
             primaryKey: true
         },
         uuid_role: {
-            type: DataTypes.UUID,
+            type: Sequelize.UUID,
             allowNull: false
         },
         name: {
-            type: DataTypes.STRING,
+            type: Sequelize.STRING,
             allowNull: false
         },
         email: {
-            type: DataTypes.STRING,
+            type: Sequelize.STRING,
             allowNull: false,
             unique: true
         },
         password: {
-            type: DataTypes.STRING,
+            type: Sequelize.STRING,
             allowNull: false
         },
         createdAt: {
-            type: DataTypes.DATE,
+            type: Sequelize.DATE,
             allowNull: true
         },
         updatedAt: {
-            type: DataTypes.DATE,
+            type: Sequelize.DATE,
             allowNull: true
         },
         deletedAt: {
-            type: DataTypes.DATE,
+            type: Sequelize.DATE,
             allowNull: true
         }
     }, {
