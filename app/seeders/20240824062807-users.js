@@ -20,7 +20,7 @@ module.exports = {
                 uuid_role: roles[0].uuid,
                 name: 'Admin',
                 email: 'admin@gmail.com',
-                password: await bcrypt.hash('password', 10),
+                password: await bcrypt.hash('@Password123', 10),
                 createdAt: new Date(),
                 updatedAt: new Date()
             },
@@ -29,7 +29,7 @@ module.exports = {
                 uuid_role: roles[1].uuid,
                 name: 'User',
                 email: 'user@gmail.com',
-                password: await bcrypt.hash('password', 10),
+                password: await bcrypt.hash('@Password123', 10),
                 createdAt: new Date(),
                 updatedAt: new Date()
             },
