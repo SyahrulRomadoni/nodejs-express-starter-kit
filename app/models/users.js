@@ -44,6 +44,7 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: true
         }
     }, {
+        tableName: 'users',
         defaultScope: {
             attributes: { exclude: [
                 // 'id',
@@ -60,8 +61,8 @@ module.exports = (sequelize, Sequelize) => {
                 attributes: {}
             }
         },
-        sequelize,
-        modelName: 'Users',
+        // sequelize,
+        // modelName: 'Users',
         // paranoid: true
     });
 

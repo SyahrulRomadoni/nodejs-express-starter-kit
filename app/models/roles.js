@@ -31,6 +31,7 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: true
         }
     }, {
+        tableName: 'roles',
         defaultScope: {
             attributes: { exclude: [
                 // 'id',
@@ -40,8 +41,8 @@ module.exports = (sequelize, Sequelize) => {
                 'deletedAt'
             ] }
         },
-        sequelize,
-        modelName: 'Roles',
+        // sequelize,
+        // modelName: 'Roles',
         // paranoid: true
     });
 
