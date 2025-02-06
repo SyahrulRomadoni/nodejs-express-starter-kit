@@ -41,6 +41,10 @@ npx sequelize-cli migration:generate --name users
 // Run Migration
 npx sequelize-cli db:migrate
 
+// Migration One Run
+npx sequelize-cli db:migrate --name 20240824062828-users.js
+npx sequelize-cli db:migrate --name 20240825024130-roles.js
+
 // Make Seeder
 npx sequelize-cli seed:generate --name users
 // Run Seeder

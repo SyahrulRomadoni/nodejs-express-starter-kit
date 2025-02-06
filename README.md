@@ -57,6 +57,13 @@ Run Migration
 ```plaintext
 npx sequelize-cli db:migrate
 ```
+Migration One Run
+```plaintext
+npx sequelize-cli db:migrate --name 20240824062828-users.js
+```
+```plaintext
+npx sequelize-cli db:migrate --name 20240825024130-roles.js
+```
 
 Make Seeder
 ```plaintext
@@ -66,7 +73,6 @@ Run Seeder
 ```plaintext
 npx sequelize-cli db:seed:all
 ```
-
 Sedeer One Run
 ```plaintext
 npx sequelize-cli db:seed --seed 20240825024126-roles.js
