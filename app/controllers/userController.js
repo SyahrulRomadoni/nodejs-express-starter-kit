@@ -15,7 +15,10 @@ exports.getCurrent = async (req, res) => {
 
     try {
         const models = await Users.scope('defaultScope').findOne({
-            where: { uuid, deletedAt: null },
+            where: {
+                uuid,
+                deletedAt: null
+            },
             include: [
                 {
                     model: Roles,
@@ -36,11 +39,11 @@ exports.getCurrent = async (req, res) => {
             status: 'success',
             message: 'Data successfully found',
             data: {
-                uuid: models.uuid,
-                uuid_role: models.uuid_role,
-                name: models.name,
-                email: models.email,
-                roles: models.roles
+                uuid      : models.uuid,
+                uuid_role : models.uuid_role,
+                name      : models.name,
+                email     : models.email,
+                roles     : models.roles
             }
         });
     } catch (error) {
@@ -86,11 +89,11 @@ exports.index = async (req, res) => {
             // ID berurutan (Dummy ID) tapi bisa pakai langsung id dari column di database kalo mau (soal disini saya pakai uuid tidak ada pakai id)
             id: offset + index + 1,
             // Data yang diambil dari model database
-            uuid: model.uuid,
-            uuid_role: model.uuid_role,
-            name: model.name,
-            email: model.email,
-            roles: model.roles ? model.roles.name : null
+            uuid      : model.uuid,
+            uuid_role : model.uuid_role,
+            name      : model.name,
+            email     : model.email,
+            roles     : model.roles ? model.roles.name : null
         }));
 
         // Kalo mau pake pagination
@@ -120,10 +123,20 @@ exports.index = async (req, res) => {
 };
 
 exports.created = async (req, res) => {
-    const { uuid_role, name, email, password } = req.body;
+    const {
+        uuid_role,
+        name,
+        email,
+        password
+    } = req.body;
 
     // Validasi Body
-    const fields = { uuid_role, name, email, password };
+    const fields = {
+        uuid_role,
+        name,
+        email,
+        password
+    };
     for (const [key, value] of Object.entries(fields)) {
         if (!value) {
             return res.json({
@@ -178,19 +191,19 @@ exports.created = async (req, res) => {
             });
         }
 
-        const models = new Users();
+        const models     = new Users();
         models.uuid_role = uuid_role;
-        models.name = name;
-        models.email = email;
-        models.password = await bcrypt.hash(password, 10);
+        models.name      = name;
+        models.email     = email;
+        models.password  = await bcrypt.hash(password, 10);
         await models.save();
 
         const responseData = {
-            uuid: models.uuid,
-            uuid_role: models.uuid_role,
-            name: models.name,
-            email: models.email,
-            roles: models.roles
+            uuid      : models.uuid,
+            uuid_role : models.uuid_role,
+            name      : models.name,
+            email     : models.email,
+            roles     : models.roles
         };
 
         res.json({
@@ -219,7 +232,10 @@ exports.read = async (req, res) => {
 
     try {
         const models = await Users.scope('defaultScope').findOne({
-            where: { uuid: uuid, deletedAt: null },
+            where: {
+                uuid,
+                deletedAt: null
+            },
             include: [
                 {
                     model: Roles,
@@ -236,7 +252,14 @@ exports.read = async (req, res) => {
             });
         }
 
-        const responseData = { uuid: models.uuid, uuid_role: models.uuid_role, name: models.name, email: models.email, roles: models.roles};
+        const responseData = {
+            uuid      : models.uuid,
+            uuid_role : models.uuid_role,
+            name      : models.name,
+            email     : models.email,
+            roles     : models.roles
+        };
+
         res.json({
             status: 'success',
             message: 'Data successfully found',
@@ -252,7 +275,12 @@ exports.read = async (req, res) => {
 
 exports.updated = async (req, res) => {
     const { uuid } = req.params;
-    const { uuid_role, name, email, password } = req.body;
+    const {
+        uuid_role,
+        name,
+        email,
+        password
+    } = req.body;
 
     // Validasi Parameter
     if (!uuid) {
@@ -263,7 +291,11 @@ exports.updated = async (req, res) => {
     }
 
     // Validasi Body
-    const fields = { uuid_role, name, email };
+    const fields = {
+        uuid_role,
+        name,
+        email
+    };
     for (const [key, value] of Object.entries(fields)) {
         if (!value) {
             return res.json({
@@ -326,7 +358,10 @@ exports.updated = async (req, res) => {
 
         // Carikan data yang akan diupdate
         const models = await Users.scope('defaultScope').findOne({
-            where: { uuid, deletedAt: null },
+            where: {
+                uuid,
+                deletedAt: null
+            },
             include: [
                 {
                     model: Roles,
@@ -351,7 +386,14 @@ exports.updated = async (req, res) => {
         }
         await models.save();
 
-        const responseData = { uuid: models.uuid, uuid_role: models.uuid_role, name: models.name, email: models.email, roles: models.roles};
+        const responseData = {
+            uuid: models.uuid,
+            uuid_role: models.uuid_role,
+            name: models.name,
+            email: models.email,
+            roles: models.roles
+        };
+
         res.json({
             status: 'success',
             message: 'Data updated successfully',
@@ -369,7 +411,12 @@ exports.deleted = async (req, res) => {
     const { uuid } = req.params;
 
     try {
-        const models = await Users.scope('defaultScope').findOne({ where: { uuid, deletedAt: null } });
+        const models = await Users.scope('defaultScope').findOne({
+            where: {
+                uuid,
+                deletedAt: null
+            }
+        });
 
         if (!models) {
             return res.json({

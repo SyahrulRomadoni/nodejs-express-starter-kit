@@ -7,10 +7,20 @@ const { Users, Roles } = require('../models');
 const { addToBlacklist, isBlacklisted } = require('../middlewares/tokenBlackList');
 
 exports.register = async (req, res) => {
-    const { uuid_role, name, email, password } = req.body;
+    const {
+        uuid_role,
+        name,
+        email,
+        password
+    } = req.body;
 
     // Validasi body
-    const fields = { uuid_role, name, email, password };
+    const fields = {
+        uuid_role,
+        name,
+        email,
+        password
+    };
     for (const [key, value] of Object.entries(fields)) {
         if (!value) {
             return res.json({
@@ -40,7 +50,6 @@ exports.register = async (req, res) => {
 
     try {
         const existingUser = await Users.findOne({ where: { email } });
-
         if (existingUser) {
             return res.json({
                 status: 'error',
@@ -49,7 +58,6 @@ exports.register = async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-
         const users = await Users.create({
             uuid: uuidv4(),
             uuid_role,
@@ -72,10 +80,16 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-    const { email, password } = req.body;
+    const {
+        email,
+        password
+    } = req.body;
 
     // Validasi body
-    const fields = { email, password };
+    const fields = {
+        email,
+        password
+    };
     for (const [key, value] of Object.entries(fields)) {
         if (!value) {
             return res.json({
@@ -106,7 +120,10 @@ exports.login = async (req, res) => {
     try {
         // Check user
         const users = await Users.scope('defaultScope').findOne({
-            where: { email, deletedAt: null },
+            where: {
+                email,
+                deletedAt: null
+            },
             include: [
                 {
                     model: Roles,
@@ -133,11 +150,11 @@ exports.login = async (req, res) => {
 
         const accessToken = jwt.sign(
             {
-                uuid: users.uuid,
-                uuid_role: users.uuid_role,
-                name: users.name,
-                email: users.email,
-                roles: users.roles.name
+                uuid      : users.uuid,
+                uuid_role : users.uuid_role,
+                name      : users.name,
+                email     : users.email,
+                roles     : users.roles.name
             },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRESIN + 'm' || '1440m' }

@@ -81,7 +81,10 @@ exports.created = async (req, res) => {
         models.name = name || models.name;
         await models.save();
 
-        const responseData = { uuid: models.uuid, name: models.name };
+        const responseData = {
+            uuid: models.uuid,
+            name: models.name
+        };
         res.json({
             status: 'success',
             message: 'Data updated successfully',
@@ -107,7 +110,12 @@ exports.read = async (req, res) => {
     }
 
     try {
-        const models = await Roles.scope('defaultScope').findOne({ where: { uuid, deletedAt: null } });
+        const models = await Roles.scope('defaultScope').findOne({
+            where: {
+                uuid,
+                deletedAt: null
+            }
+        });
 
         if (!models) {
             return res.json({
@@ -116,7 +124,10 @@ exports.read = async (req, res) => {
             });
         }
 
-        const responseData = { uuid: models.uuid, name: models.name };
+        const responseData = {
+            uuid: models.uuid,
+            name: models.name
+        };
         res.json({
             status: 'success',
             message: 'Data successfully found',
@@ -155,7 +166,12 @@ exports.updated = async (req, res) => {
 
     try {
         // Carikan data yang akan diupdate
-        const models = await Roles.scope('defaultScope').findOne({ where: { uuid, deletedAt: null } });
+        const models = await Roles.scope('defaultScope').findOne({
+            where: {
+                uuid,
+                deletedAt: null
+            }
+        });
 
         if (!models) {
             return res.json({
@@ -167,7 +183,10 @@ exports.updated = async (req, res) => {
         models.name = name || models.name;
         await models.save();
 
-        const responseData = { uuid: models.uuid, name: models.name };
+        const responseData = {
+            uuid: models.uuid,
+            name: models.name
+        };
         res.json({
             status: 'success',
             message: 'Data updated successfully',
@@ -185,7 +204,12 @@ exports.deleted = async (req, res) => {
     const { uuid } = req.params;
 
     try {
-        const models = await Roles.scope('defaultScope').findOne({ where: { uuid, deletedAt: null } });
+        const models = await Roles.scope('defaultScope').findOne({
+            where: {
+                uuid,
+                deletedAt: null
+            }
+        });
 
         if (!models) {
             return res.json({

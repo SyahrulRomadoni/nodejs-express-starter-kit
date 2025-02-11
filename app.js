@@ -11,7 +11,12 @@ dotenv.config();
 const app = express();
 
 // Aktifkan middleware CORS untuk semua rute
-app.use(cors()); 
+app.use(cors());
+
+// Atur limit payload JSON
+app.use(express.json({ limit: '50mb' }));
+// Atur limit payload form-urlencoded
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Atau jika ingin menggunakan konfigurasi khusus:
 // const corsOptions = {
