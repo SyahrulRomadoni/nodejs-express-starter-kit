@@ -13,9 +13,9 @@ exports.index = async (req, res) => {
 
     try {
         const { count, rows: models } = await Roles.scope('defaultScope').findAndCountAll({
-            where: { deletedAt: null },
-            // attributes: ['uuid', 'name'],
-            order: [['name', 'ASC']],
+            where: { deleted_at: null },
+            // attributes: ['id', 'name'],
+            order: [['id', 'DESC']],
 
             // kalau mau pake limit data
             limit: limit !== null ? limit : undefined,
@@ -24,12 +24,12 @@ exports.index = async (req, res) => {
             offset: offset
         });
 
-        // const responseData = models.map(({ uuid, name }) => ({ uuid, name }));
+        // const responseData = models.map(({ id, name }) => ({ id, name }));
         const responseData = models.map((model, index) => ({
-            // ID berurutan (Dummy ID) tapi bisa pakai langsung id dari column di database kalo mau (soal disini saya pakai uuid tidak ada pakai id)
+            // ID berurutan (Dummy ID) tapi bisa pakai langsung id dari column di database kalo mau (soal disini saya pakai id tidak ada pakai id)
             id: offset + index + 1,
             // Data yang diambil dari model database
-            uuid: model.uuid,
+            id: model.id,
             name: model.name
         }));
 
@@ -82,8 +82,8 @@ exports.created = async (req, res) => {
         await models.save();
 
         const responseData = {
-            uuid: models.uuid,
-            name: models.name
+            id   : models.id,
+            name : models.name
         };
         res.json({
             status: 'success',
@@ -99,21 +99,21 @@ exports.created = async (req, res) => {
 };
 
 exports.read = async (req, res) => {
-    const { uuid } = req.params;
+    const { id } = req.params;
 
     // Validasi Parameter
-    if (!uuid) {
+    if (!id) {
         return res.json({
             status: 'error',
-            message: 'UUID is required'
+            message: 'ID is required'
         });
     }
 
     try {
         const models = await Roles.scope('defaultScope').findOne({
             where: {
-                uuid,
-                deletedAt: null
+                id,
+                deleted_at: null
             }
         });
 
@@ -125,8 +125,8 @@ exports.read = async (req, res) => {
         }
 
         const responseData = {
-            uuid: models.uuid,
-            name: models.name
+            id   : models.id,
+            name : models.name
         };
         res.json({
             status: 'success',
@@ -142,14 +142,14 @@ exports.read = async (req, res) => {
 };
 
 exports.updated = async (req, res) => {
-    const { uuid } = req.params;
+    const { id } = req.params;
     const { name } = req.body;
 
-    // Validasi uuid
-    if (!uuid) {
+    // Validasi id
+    if (!id) {
         return res.json({
             status: 'error',
-            message: 'UUID is required'
+            message: 'ID is required'
         });
     }
 
@@ -168,8 +168,8 @@ exports.updated = async (req, res) => {
         // Carikan data yang akan diupdate
         const models = await Roles.scope('defaultScope').findOne({
             where: {
-                uuid,
-                deletedAt: null
+                id,
+                deleted_at: null
             }
         });
 
@@ -184,8 +184,8 @@ exports.updated = async (req, res) => {
         await models.save();
 
         const responseData = {
-            uuid: models.uuid,
-            name: models.name
+            id   : models.id,
+            name : models.name
         };
         res.json({
             status: 'success',
@@ -201,13 +201,21 @@ exports.updated = async (req, res) => {
 };
 
 exports.deleted = async (req, res) => {
-    const { uuid } = req.params;
+    const { id } = req.params;
+
+    // Validasi Parameter
+    if (!id) {
+        return res.json({
+            status: 'error',
+            message: 'User ID is required'
+        });
+    }
 
     try {
         const models = await Roles.scope('defaultScope').findOne({
             where: {
-                uuid,
-                deletedAt: null
+                id,
+                deleted_at: null
             }
         });
 
@@ -218,7 +226,9 @@ exports.deleted = async (req, res) => {
             });
         }
 
-        await models.destroy();
+        // await models.destroy();
+        models.deleted_at = new Date();
+        await models.save();
 
         res.json({
             status: 'success',

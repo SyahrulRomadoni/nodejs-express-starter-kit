@@ -1,28 +1,30 @@
-// app/migrations
-
 'use strict';
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-    async up (queryInterface, Sequelize) {
-        await queryInterface.createTable('users', {
-            // id: {
-            //     allowNull: false,
-            //     autoIncrement: true,
-            //     // primaryKey: true,
-            //     type: Sequelize.INTEGER
-            // },
-            uuid: {
-                type: Sequelize.UUID,
-                defaultValue: Sequelize.UUIDV4,
+    async up(sequelize, Sequelize) {
+        await sequelize.createTable('users', {
+            id: {
                 allowNull: false,
-                unique: true,
-                primaryKey: true
+                autoIncrement: true,
+                primaryKey: true,
+                type: Sequelize.INTEGER
             },
-            uuid_role: {
-                type: Sequelize.UUID,
+            id_role: {
+                type: Sequelize.INTEGER,
                 allowNull: false
             },
+            // uuid: {
+            //     type: Sequelize.UUID,
+            //     defaultValue: Sequelize.UUIDV4,
+            //     allowNull: false,
+            //     unique: true,
+            //     primaryKey: true
+            // },
+            // uuid_role: {
+            //     type: Sequelize.UUID,
+            //     allowNull: false
+            // },
             name: {
                 type: Sequelize.STRING,
                 allowNull: false
@@ -34,24 +36,24 @@ module.exports = {
             },
             password: {
                 type: Sequelize.STRING,
-                allowNull: false,
+                allowNull: false
             },
-            createdAt: {
+            created_at: {
                 type: Sequelize.DATE,
-                allowNull: false,
+                allowNull: false
             },
-            updatedAt: {
+            updated_at: {
                 type: Sequelize.DATE,
-                allowNull: false,
+                allowNull: false
             },
-            deletedAt: {
+            deleted_at: {
                 type: Sequelize.DATE,
-                allowNull: true,
+                allowNull: true
             }
         });
     },
 
-    async down (queryInterface, Sequelize) {
-        await queryInterface.dropTable('Users');
+    async down(sequelize, Sequelize) {
+        await sequelize.dropTable('users');
     }
 };

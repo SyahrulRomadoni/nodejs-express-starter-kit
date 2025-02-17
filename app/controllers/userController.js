@@ -4,20 +4,21 @@ const bcrypt = require('bcryptjs');
 const { Users, Roles } = require('../models');
 
 exports.getCurrent = async (req, res) => {
-    const { uuid } = req.user;
+    const { id } = req.user;
 
-    if (!uuid) {
+    // Validasi Parameter
+    if (!id) {
         return res.json({
             status: 'error',
-            message: 'User UUID is required'
+            message: 'User ID is required'
         });
     }
 
     try {
         const models = await Users.scope('defaultScope').findOne({
             where: {
-                uuid,
-                deletedAt: null
+                id,
+                deleted_at: null
             },
             include: [
                 {
@@ -39,11 +40,11 @@ exports.getCurrent = async (req, res) => {
             status: 'success',
             message: 'Data successfully found',
             data: {
-                uuid      : models.uuid,
-                uuid_role : models.uuid_role,
-                name      : models.name,
-                email     : models.email,
-                roles     : models.roles
+                id      : models.id,
+                id_role : models.id_role,
+                name    : models.name,
+                email   : models.email,
+                roles   : models.roles
             }
         });
     } catch (error) {
@@ -65,8 +66,8 @@ exports.index = async (req, res) => {
 
     try {
         const { count, rows: models } = await Users.scope('defaultScope').findAndCountAll({
-            where: { deletedAt: null },
-            // attributes: ['uuid', 'uuid_role', 'name', 'email'],
+            where: { deleted_at: null },
+            // attributes: ['id', 'id_role', 'name', 'email'],
             include: [
                 {
                     model: Roles,
@@ -74,7 +75,7 @@ exports.index = async (req, res) => {
                     attributes: ['name']
                 }
             ],
-            order: [['name', 'ASC']],
+            order: [['id', 'DESC']],
 
             // kalau mau pake limit data
             // limit: limit,
@@ -84,13 +85,13 @@ exports.index = async (req, res) => {
             offset: offset
         });
 
-        // const responseData = models.map(({ uuid, uuid_role, name, email, roles }) => ({ uuid, uuid_role, name, email, roles }));
+        // const responseData = models.map(({ id, id_role, name, email, roles }) => ({ id, id_role, name, email, roles }));
         const responseData = models.map((model, index) => ({
-            // ID berurutan (Dummy ID) tapi bisa pakai langsung id dari column di database kalo mau (soal disini saya pakai uuid tidak ada pakai id)
+            // ID berurutan (Dummy ID) tapi bisa pakai langsung id dari column di database kalo mau (soal disini saya pakai id tidak ada pakai id)
             id: offset + index + 1,
             // Data yang diambil dari model database
-            uuid      : model.uuid,
-            uuid_role : model.uuid_role,
+            id      : model.id,
+            id_role : model.id_role,
             name      : model.name,
             email     : model.email,
             roles     : model.roles ? model.roles.name : null
@@ -124,7 +125,7 @@ exports.index = async (req, res) => {
 
 exports.created = async (req, res) => {
     const {
-        uuid_role,
+        id_role,
         name,
         email,
         password
@@ -132,7 +133,7 @@ exports.created = async (req, res) => {
 
     // Validasi Body
     const fields = {
-        uuid_role,
+        id_role,
         name,
         email,
         password
@@ -165,16 +166,17 @@ exports.created = async (req, res) => {
     }
 
     try {
-        // cek format uuid
-        const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
-        if (!uuidRegex.test(uuid_role)) {
-            return res.json({
-                status: 'error',
-                message: 'Invalid uuid_role format'
-            });
-        }
+        // // cek format uuid
+        // const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+        // if (!uuidRegex.test(uuid_role)) {
+        //     return res.json({
+        //         status: 'error',
+        //         message: 'Invalid uuid_role format'
+        //     });
+        // }
+
         // Cek apakah role sudah ada di database
-        const role = await Roles.findOne({ where: { uuid: uuid_role } });
+        const role = await Roles.findOne({ where: { id: id_role } });
         if (!role) {
             return res.json({
                 status: 'error',
@@ -191,19 +193,19 @@ exports.created = async (req, res) => {
             });
         }
 
-        const models     = new Users();
-        models.uuid_role = uuid_role;
-        models.name      = name;
-        models.email     = email;
-        models.password  = await bcrypt.hash(password, 10);
+        const models    = new Users();
+        models.id_role  = id_role;
+        models.name     = name;
+        models.email    = email;
+        models.password = await bcrypt.hash(password, 10);
         await models.save();
 
         const responseData = {
-            uuid      : models.uuid,
-            uuid_role : models.uuid_role,
-            name      : models.name,
-            email     : models.email,
-            roles     : models.roles
+            uuid    : models.uuid,
+            id_role : models.id_role,
+            name    : models.name,
+            email   : models.email,
+            roles   : models.roles
         };
 
         res.json({
@@ -220,21 +222,21 @@ exports.created = async (req, res) => {
 };
 
 exports.read = async (req, res) => {
-    const { uuid } = req.params;
+    const { id } = req.params;
 
     // Validasi Parameter
-    if (!uuid) {
+    if (!id) {
         return res.json({
             status: 'error',
-            message: 'UUID is required'
+            message: 'ID is required'
         });
     }
 
     try {
         const models = await Users.scope('defaultScope').findOne({
             where: {
-                uuid,
-                deletedAt: null
+                id,
+                deleted_at: null
             },
             include: [
                 {
@@ -253,11 +255,11 @@ exports.read = async (req, res) => {
         }
 
         const responseData = {
-            uuid      : models.uuid,
-            uuid_role : models.uuid_role,
-            name      : models.name,
-            email     : models.email,
-            roles     : models.roles
+            id      : models.id,
+            id_role : models.id_role,
+            name    : models.name,
+            email   : models.email,
+            roles   : models.roles
         };
 
         res.json({
@@ -274,25 +276,25 @@ exports.read = async (req, res) => {
 };
 
 exports.updated = async (req, res) => {
-    const { uuid } = req.params;
+    const { id } = req.params;
     const {
-        uuid_role,
+        id_role,
         name,
         email,
         password
     } = req.body;
 
     // Validasi Parameter
-    if (!uuid) {
+    if (!id) {
         return res.json({
             status: 'error',
-            message: 'UUID is required'
+            message: 'ID is required'
         });
     }
 
     // Validasi Body
     const fields = {
-        uuid_role,
+        id_role,
         name,
         email
     };
@@ -326,16 +328,17 @@ exports.updated = async (req, res) => {
     }
 
     try {
-        // cek format uuid
-        const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
-        if (!uuidRegex.test(uuid_role)) {
-            return res.json({
-                status: 'error',
-                message: 'Invalid uuid_role format'
-            });
-        }
+        // // cek format uuid
+        // const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+        // if (!uuidRegex.test(uuid_role)) {
+        //     return res.json({
+        //         status: 'error',
+        //         message: 'Invalid uuid_role format'
+        //     });
+        // }
+
         // Cek apakah role sudah ada di database
-        const role = await Roles.findOne({ where: { uuid: uuid_role } });
+        const role = await Roles.findOne({ where: { id: id_role } });
         if (!role) {
             return res.json({
                 status: 'error',
@@ -343,24 +346,11 @@ exports.updated = async (req, res) => {
             });
         }
         
-        // Cek apakah email sudah ada di database
-        const emailLama = await Users.findOne({ where: { uuid: uuid } });
-        const emailBaru = await Users.findOne({ where: { email: email } });
-        if (emailBaru) {
-            if (emailLama.email == emailBaru.email) {
-            } else {
-                return res.json({
-                    status: 'error',
-                    message: 'Email already exists'
-                });
-            }
-        }
-
         // Carikan data yang akan diupdate
         const models = await Users.scope('defaultScope').findOne({
             where: {
-                uuid,
-                deletedAt: null
+                id,
+                deleted_at: null
             },
             include: [
                 {
@@ -378,17 +368,17 @@ exports.updated = async (req, res) => {
             });
         }
 
-        models.uuid_role = uuid_role || models.uuid_role;
-        models.name = name || models.name;
-        models.email = email || models.email;
+        models.id_role = id_role || models.id_role;
+        models.name    = name    || models.name;
+        models.email   = email   || models.email;
         if (password) {
             models.password = await bcrypt.hash(password, 10);
         }
         await models.save();
 
         const responseData = {
-            uuid: models.uuid,
-            uuid_role: models.uuid_role,
+            id: models.id,
+            id_role: models.id_role,
             name: models.name,
             email: models.email,
             roles: models.roles
@@ -408,13 +398,21 @@ exports.updated = async (req, res) => {
 };
 
 exports.deleted = async (req, res) => {
-    const { uuid } = req.params;
+    const { id } = req.params;
+
+    // Validasi Parameter
+    if (!id) {
+        return res.json({
+            status: 'error',
+            message: 'ID is required'
+        });
+    }
 
     try {
         const models = await Users.scope('defaultScope').findOne({
             where: {
-                uuid,
-                deletedAt: null
+                id,
+                deleted_at: null
             }
         });
 
@@ -425,7 +423,9 @@ exports.deleted = async (req, res) => {
             });
         }
 
-        await models.destroy();
+        // await models.destroy();
+        models.deleted_at = new Date();
+        await models.save();
 
         res.json({
             status: 'success',

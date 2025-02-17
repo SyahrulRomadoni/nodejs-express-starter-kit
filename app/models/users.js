@@ -1,23 +1,27 @@
-// app/models
+// app/
 
 module.exports = (sequelize, Sequelize) => {
-    const Users = sequelize.define('users', {
-        // id: {
-        //     type: Sequelize.INTEGER,
-        //     autoIncrement: true,
-        //     allowNull: false,
-        //     // primaryKey: true
-        // },
-        uuid: {
-            type: Sequelize.UUID,
-            defaultValue: Sequelize.UUIDV4,
+    const Users = sequelize.define('Users', {
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
             allowNull: false,
             primaryKey: true
         },
-        uuid_role: {
-            type: Sequelize.UUID,
-            allowNull: false
+        id_role: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
         },
+        // uuid: {
+        //     type: Sequelize.UUID,
+        //     primaryKey: true,
+        //     allowNull: false,
+        //     defaultValue: Sequelize.UUIDV4
+        // },
+        // uuid_role: {
+        //     type: Sequelize.UUID,
+        //     allowNull: false
+        // },
         name: {
             type: Sequelize.STRING,
             allowNull: false
@@ -31,43 +35,29 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             allowNull: false
         },
-        createdAt: {
+        created_at: {
             type: Sequelize.DATE,
             allowNull: true
         },
-        updatedAt: {
+        updated_at: {
             type: Sequelize.DATE,
             allowNull: true
         },
-        deletedAt: {
+        deleted_at: {
             type: Sequelize.DATE,
             allowNull: true
         }
     }, {
         tableName: 'users',
-        defaultScope: {
-            attributes: { exclude: [
-                // 'id',
-                // 'uuid',
-                // 'uuid_role',
-                // 'password',
-                'createdAt',
-                'updatedAt',
-                'deletedAt'
-            ] }
-        },
-        scopes: {
-            withPassword: {
-                attributes: {}
-            }
-        },
-        // sequelize,
-        // modelName: 'Users',
-        // paranoid: true
+        underscored: true,
+        timestamps: true,
     });
 
     Users.associate = function(models) {
-        Users.belongsTo(models.Roles, { foreignKey: 'uuid_role', as: 'roles' });
+        Users.belongsTo(models.Roles, {
+            foreignKey: 'id_role',
+            as: 'roles'
+        });
     };
 
     return Users;

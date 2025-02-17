@@ -8,7 +8,7 @@ const { addToBlacklist, isBlacklisted } = require('../middlewares/tokenBlackList
 
 exports.register = async (req, res) => {
     const {
-        uuid_role,
+        id_role,
         name,
         email,
         password
@@ -16,7 +16,7 @@ exports.register = async (req, res) => {
 
     // Validasi body
     const fields = {
-        uuid_role,
+        id_role,
         name,
         email,
         password
@@ -59,17 +59,25 @@ exports.register = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const users = await Users.create({
-            uuid: uuidv4(),
-            uuid_role,
+            // uuid: uuidv4(),
+            // uuid_role,
+            id_role,
             name,
             email,
             password: hashedPassword
         });
 
+        const response = {
+            id: users.id,
+            id_role: users.id_role,
+            name: users.name,
+            email: users.email
+        };
+
         res.json({
             status: 'success',
             message: 'User registered successfully',
-            data: users
+            data: response
         });
     } catch (error) {
         res.json({
@@ -122,7 +130,7 @@ exports.login = async (req, res) => {
         const users = await Users.scope('defaultScope').findOne({
             where: {
                 email,
-                deletedAt: null
+                deleted_at: null
             },
             include: [
                 {
@@ -150,11 +158,11 @@ exports.login = async (req, res) => {
 
         const accessToken = jwt.sign(
             {
-                uuid      : users.uuid,
-                uuid_role : users.uuid_role,
-                name      : users.name,
-                email     : users.email,
-                roles     : users.roles.name
+                id      : users.id,
+                id_role : users.id_role,
+                name    : users.name,
+                email   : users.email,
+                roles   : users.roles.name
             },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRESIN + 'm' || '1440m' }

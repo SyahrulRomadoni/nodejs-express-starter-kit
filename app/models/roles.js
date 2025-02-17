@@ -2,52 +2,45 @@
 
 module.exports = (sequelize, Sequelize) => {
     const Roles = sequelize.define('roles', {
-        // id: {
-        //     type: Sequelize.INTEGER,
-        //     autoIncrement: true,
-        //     allowNull: false,
-        //     // primaryKey: true
-        // },
-        uuid: {
-            type: Sequelize.UUID,
-            defaultValue: Sequelize.UUIDV4,
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
             allowNull: false,
             primaryKey: true
         },
+        // uuid: {
+        //     type: Sequelize.UUID,
+        //     defaultValue: Sequelize.UUIDV4,
+        //     allowNull: false,
+        //     primaryKey: true
+        // },
         name: {
             type: Sequelize.STRING,
             allowNull: false
         },
-        createdAt: {
+        created_at: {
             type: Sequelize.DATE,
             allowNull: true
         },
-        updatedAt: {
+        updated_at: {
             type: Sequelize.DATE,
             allowNull: true
         },
-        deletedAt: {
+        deleted_at: {
             type: Sequelize.DATE,
             allowNull: true
         }
     }, {
         tableName: 'roles',
-        defaultScope: {
-            attributes: { exclude: [
-                // 'id',
-                // 'uuid',
-                'createdAt',
-                'updatedAt',
-                'deletedAt'
-            ] }
-        },
-        // sequelize,
-        // modelName: 'Roles',
-        // paranoid: true
+        underscored: true,
+        timestamps: true,
     });
 
     Roles.associate = function(models) {
-        Roles.hasMany(models.Users, { foreignKey: 'uuid_role', as: 'users' });
+        Roles.hasMany(models.Users, {
+            foreignKey: 'id_role',
+            as: 'users'
+        });
     };
 
     return Roles;

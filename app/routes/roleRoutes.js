@@ -14,8 +14,8 @@ const router = express.Router();
 
 router.get('/', authenticateToken, index);
 router.post('/', authenticateToken, created);
-router.get('/:uuid', authenticateToken, read);
-router.put('/:uuid', authenticateToken, updated);
-router.delete('/:uuid', authenticateToken, deleted);
+router.get('/:id', authenticateToken, read);
+router.put('/:id', authenticateToken, updated);
+router.delete('/:id', authenticateToken, deleted);
 
 module.exports = router;

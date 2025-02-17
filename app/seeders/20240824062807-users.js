@@ -9,29 +9,31 @@ const { v4: uuidv4 } = require('uuid');
 module.exports = {
     async up (queryInterface, Sequelize) {
         
-        const roles = await queryInterface.sequelize.query(
-            `SELECT uuid FROM "roles" ORDER BY "createdAt" ASC`,
-            { type: Sequelize.QueryTypes.SELECT }
-        );
+        // const roles = await queryInterface.sequelize.query(
+        //     `SELECT uuid FROM "roles" ORDER BY "created_at" ASC`,
+        //     { type: Sequelize.QueryTypes.SELECT }
+        // );
 
         return queryInterface.bulkInsert('users', [
             {
-                uuid: uuidv4(),
-                uuid_role: roles[0].uuid,
+                // uuid: uuidv4(),
+                // uuid_role: roles[0].uuid,
+                id_role: 1,
                 name: 'Admin',
                 email: 'admin@gmail.com',
                 password: await bcrypt.hash('@Password123', 10),
-                createdAt: new Date(),
-                updatedAt: new Date()
+                created_at: new Date(),
+                updated_at: new Date()
             },
             {
-                uuid: uuidv4(),
-                uuid_role: roles[1].uuid,
+                // uuid: uuidv4(),
+                // uuid_role: roles[1].uuid,
+                id_role: 2,
                 name: 'User',
                 email: 'user@gmail.com',
                 password: await bcrypt.hash('@Password123', 10),
-                createdAt: new Date(),
-                updatedAt: new Date()
+                created_at: new Date(),
+                updated_at: new Date()
             },
         ]);
     },
