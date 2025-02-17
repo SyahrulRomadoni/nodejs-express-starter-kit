@@ -201,7 +201,7 @@ exports.created = async (req, res) => {
         await models.save();
 
         const responseData = {
-            uuid    : models.uuid,
+            id    : models.id,
             id_role : models.id_role,
             name    : models.name,
             email   : models.email,
