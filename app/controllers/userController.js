@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const { Users, Roles } = require('../models');
 
 exports.getCurrent = async (req, res) => {
+    // Ambil parameter dari request
     const { id } = req.user;
 
     // Validasi Parameter
@@ -15,11 +16,13 @@ exports.getCurrent = async (req, res) => {
     }
 
     try {
+        // Cari data berdasarkan ID
         const models = await Users.scope('defaultScope').findOne({
             where: {
                 id,
                 deleted_at: null
             },
+            // ambil data dari tabel roles dengan relasi yang sudah di buat
             include: [
                 {
                     model: Roles,
@@ -29,6 +32,7 @@ exports.getCurrent = async (req, res) => {
             ]
         });
 
+        // Validasi jika data tidak ditemukan
         if (!models) {
             return res.json({
                 status: 'error',
@@ -36,16 +40,19 @@ exports.getCurrent = async (req, res) => {
             });
         }
 
+        // Data yang akan di tampilkan
+        const responseData = {
+            id      : models.id,
+            id_role : models.id_role,
+            name    : models.name,
+            email   : models.email,
+            roles   : models.roles
+        };
+
         res.json({
             status: 'success',
             message: 'Data successfully found',
-            data: {
-                id      : models.id,
-                id_role : models.id_role,
-                name    : models.name,
-                email   : models.email,
-                roles   : models.roles
-            }
+            data: responseData
         });
     } catch (error) {
         res.json({
@@ -65,6 +72,7 @@ exports.index = async (req, res) => {
     const offset = (page - 1) * limit;
 
     try {
+        // Buat data model untuk menampilkan data berdasarkan limit dan offset
         const { count, rows: models } = await Users.scope('defaultScope').findAndCountAll({
             where: { deleted_at: null },
             // attributes: ['id', 'id_role', 'name', 'email'],
@@ -88,10 +96,11 @@ exports.index = async (req, res) => {
         // const responseData = models.map(({ id, id_role, name, email, roles }) => ({ id, id_role, name, email, roles }));
         const responseData = models.map((model, index) => ({
             // ID berurutan (Dummy ID) tapi bisa pakai langsung id dari column di database kalo mau (soal disini saya pakai id tidak ada pakai id)
-            id: offset + index + 1,
+            // id: offset + index + 1,
+
             // Data yang diambil dari model database
-            id      : model.id,
-            id_role : model.id_role,
+            id        : model.id,
+            id_role   : model.id_role,
             name      : model.name,
             email     : model.email,
             roles     : model.roles ? model.roles.name : null
@@ -124,6 +133,7 @@ exports.index = async (req, res) => {
 };
 
 exports.created = async (req, res) => {
+    // Ambil data dari request
     const {
         id_role,
         name,
@@ -193,6 +203,7 @@ exports.created = async (req, res) => {
     }
 
     try {
+        // Bikin data baru
         const models    = new Users();
         models.id_role  = id_role;
         models.name     = name;
@@ -200,6 +211,7 @@ exports.created = async (req, res) => {
         models.password = await bcrypt.hash(password, 10);
         await models.save();
 
+        // Data yang akan di tampilkan
         const responseData = {
             id      : models.id,
             id_role : models.id_role,
@@ -222,6 +234,7 @@ exports.created = async (req, res) => {
 };
 
 exports.read = async (req, res) => {
+    // Ambil parameter dari request
     const { id } = req.params;
 
     // Validasi Parameter
@@ -233,11 +246,13 @@ exports.read = async (req, res) => {
     }
 
     try {
+        // Cari data berdasarkan ID
         const models = await Users.scope('defaultScope').findOne({
             where: {
                 id,
                 deleted_at: null
             },
+            // ambil data dari tabel roles dengan relasi yang sudah di buat
             include: [
                 {
                     model: Roles,
@@ -247,6 +262,7 @@ exports.read = async (req, res) => {
             ],
         });
 
+        // Validasi jika data tidak ditemukan
         if (!models) {
             return res.json({
                 status: 'error',
@@ -276,7 +292,9 @@ exports.read = async (req, res) => {
 };
 
 exports.updated = async (req, res) => {
+    // Ambil parameter dari request
     const { id } = req.params;
+    // Ambil data dari request
     const {
         id_role,
         name,
@@ -346,13 +364,13 @@ exports.updated = async (req, res) => {
     }
 
     try {
-        
         // Carikan data yang akan diupdate
         const models = await Users.scope('defaultScope').findOne({
             where: {
                 id,
                 deleted_at: null
             },
+            // ambil data dari tabel roles dengan relasi yang sudah di buat
             include: [
                 {
                     model: Roles,
@@ -362,6 +380,7 @@ exports.updated = async (req, res) => {
             ]
         });
 
+        // Validasi Data ada atau tidak
         if (!models) {
             return res.json({
                 status: 'error',
@@ -381,6 +400,7 @@ exports.updated = async (req, res) => {
             }
         }
 
+        // Update data
         models.id_role = id_role || models.id_role;
         models.name    = name    || models.name;
         models.email   = email   || models.email;
@@ -389,6 +409,7 @@ exports.updated = async (req, res) => {
         }
         await models.save();
 
+        // Data yang akan di tampilkan
         const responseData = {
             id: models.id,
             id_role: models.id_role,
@@ -422,6 +443,7 @@ exports.deleted = async (req, res) => {
     }
 
     try {
+        // Cari data berdasarkan ID
         const models = await Users.scope('defaultScope').findOne({
             where: {
                 id,
@@ -429,6 +451,7 @@ exports.deleted = async (req, res) => {
             }
         });
 
+        // Validasi jika data tidak ditemukan
         if (!models) {
             return res.json({
                 status: 'error',

@@ -12,6 +12,7 @@ exports.index = async (req, res) => {
     const offset = (page - 1) * limit;
 
     try {
+        // Buat data model untuk menampilkan data berdasarkan limit dan offset
         const { count, rows: models } = await Roles.scope('defaultScope').findAndCountAll({
             where: { deleted_at: null },
             // attributes: ['id', 'name'],
@@ -27,10 +28,11 @@ exports.index = async (req, res) => {
         // const responseData = models.map(({ id, name }) => ({ id, name }));
         const responseData = models.map((model, index) => ({
             // ID berurutan (Dummy ID) tapi bisa pakai langsung id dari column di database kalo mau (soal disini saya pakai id tidak ada pakai id)
-            id: offset + index + 1,
+            // id: offset + index + 1,
+            
             // Data yang diambil dari model database
-            id: model.id,
-            name: model.name
+            id   : model.id,
+            name : model.name
         }));
 
         // Kalo mau pake pagination
@@ -61,6 +63,7 @@ exports.index = async (req, res) => {
 };
 
 exports.created = async (req, res) => {
+    // Ambil data dari request
     const { name } = req.body;
 
     // Validasi Body
@@ -84,16 +87,17 @@ exports.created = async (req, res) => {
     }
 
     try {
-        // Carikan data yang akan diupdate
+        // Bikin data baru
         const models = new Roles();
-
         models.name = name || models.name;
         await models.save();
 
+        // Data yang akan di tampilkan
         const responseData = {
             id   : models.id,
             name : models.name
         };
+
         res.json({
             status: 'success',
             message: 'Data updated successfully',
@@ -108,6 +112,7 @@ exports.created = async (req, res) => {
 };
 
 exports.read = async (req, res) => {
+    // Ambil parameter dari request
     const { id } = req.params;
 
     // Validasi Parameter
@@ -119,13 +124,13 @@ exports.read = async (req, res) => {
     }
 
     try {
+        // Cari data berdasarkan ID
         const models = await Roles.scope('defaultScope').findOne({
             where: {
                 id,
                 deleted_at: null
             }
         });
-
         if (!models) {
             return res.json({
                 status: 'error',
@@ -133,10 +138,12 @@ exports.read = async (req, res) => {
             });
         }
 
+        // Data yang akan di tampilkan
         const responseData = {
             id   : models.id,
             name : models.name
         };
+
         res.json({
             status: 'success',
             message: 'Data successfully found',
@@ -151,7 +158,9 @@ exports.read = async (req, res) => {
 };
 
 exports.updated = async (req, res) => {
+    // Ambil parameter dari request
     const { id } = req.params;
+    // Ambil data dari request
     const { name } = req.body;
 
     // Validasi id
@@ -191,6 +200,7 @@ exports.updated = async (req, res) => {
             }
         });
 
+        // Validasi Data ada atau tidak
         if (!models) {
             return res.json({
                 status: 'error',
@@ -198,13 +208,16 @@ exports.updated = async (req, res) => {
             });
         }
 
+        // Update data
         models.name = name || models.name;
         await models.save();
 
+        // Data yang akan di tampilkan
         const responseData = {
             id   : models.id,
             name : models.name
         };
+
         res.json({
             status: 'success',
             message: 'Data updated successfully',
@@ -219,6 +232,7 @@ exports.updated = async (req, res) => {
 };
 
 exports.deleted = async (req, res) => {
+    // Ambil parameter dari request
     const { id } = req.params;
 
     // Validasi Parameter
@@ -230,6 +244,7 @@ exports.deleted = async (req, res) => {
     }
 
     try {
+        // Cari data berdasarkan ID
         const models = await Roles.scope('defaultScope').findOne({
             where: {
                 id,
@@ -237,6 +252,7 @@ exports.deleted = async (req, res) => {
             }
         });
 
+        // Validasi Data ada atau tidak
         if (!models) {
             return res.json({
                 status: 'error',
