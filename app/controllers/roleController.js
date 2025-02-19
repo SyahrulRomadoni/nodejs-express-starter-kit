@@ -74,6 +74,15 @@ exports.created = async (req, res) => {
         }
     }
 
+    // Cek role apakah data sudah ada
+    const nameCheck = await Roles.findOne({ where: { name } });
+    if (nameCheck) {
+        return res.json({
+            status: 'error',
+            message: 'Role already exists'
+        });
+    }
+
     try {
         // Carikan data yang akan diupdate
         const models = new Roles();
@@ -162,6 +171,15 @@ exports.updated = async (req, res) => {
                 message: `${key} is required`
             });
         }
+    }
+
+    // Cek role apakah data sudah ada
+    const nameCheck = await Roles.findOne({ where: { name } });
+    if (nameCheck) {
+        return res.json({
+            status: 'error',
+            message: "The role name cannot be the same as the current name"
+        });
     }
 
     try {

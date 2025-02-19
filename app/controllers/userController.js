@@ -165,34 +165,34 @@ exports.created = async (req, res) => {
         });
     }
 
+    // // cek format uuid
+    // const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    // if (!uuidRegex.test(uuid_role)) {
+    //     return res.json({
+    //         status: 'error',
+    //         message: 'Invalid uuid_role format'
+    //     });
+    // }
+
+    // Cek apakah role sudah ada di database
+    const role = await Roles.findOne({ where: { id: id_role } });
+    if (!role) {
+        return res.json({
+            status: 'error',
+            message: 'Role not found'
+        });
+    }
+    
+    // Cek apakah email sudah ada di database
+    const existingUser = await Users.findOne({ where: { email: email } });
+    if (existingUser) {
+        return res.json({
+            status: 'error',
+            message: 'Email already exists'
+        });
+    }
+
     try {
-        // // cek format uuid
-        // const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
-        // if (!uuidRegex.test(uuid_role)) {
-        //     return res.json({
-        //         status: 'error',
-        //         message: 'Invalid uuid_role format'
-        //     });
-        // }
-
-        // Cek apakah role sudah ada di database
-        const role = await Roles.findOne({ where: { id: id_role } });
-        if (!role) {
-            return res.json({
-                status: 'error',
-                message: 'Role not found'
-            });
-        }
-        
-        // Cek apakah email sudah ada di database
-        const existingUser = await Users.findOne({ where: { email: email } });
-        if (existingUser) {
-            return res.json({
-                status: 'error',
-                message: 'Email already exists'
-            });
-        }
-
         const models    = new Users();
         models.id_role  = id_role;
         models.name     = name;
@@ -327,24 +327,25 @@ exports.updated = async (req, res) => {
         }
     }
 
-    try {
-        // // cek format uuid
-        // const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
-        // if (!uuidRegex.test(uuid_role)) {
-        //     return res.json({
-        //         status: 'error',
-        //         message: 'Invalid uuid_role format'
-        //     });
-        // }
+    // // cek format uuid
+    // const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    // if (!uuidRegex.test(uuid_role)) {
+    //     return res.json({
+    //         status: 'error',
+    //         message: 'Invalid uuid_role format'
+    //     });
+    // }
 
-        // Cek apakah role sudah ada di database
-        const role = await Roles.findOne({ where: { id: id_role } });
-        if (!role) {
-            return res.json({
-                status: 'error',
-                message: 'Role not found'
-            });
-        }
+    // Cek apakah role sudah ada di database
+    const role = await Roles.findOne({ where: { id: id_role } });
+    if (!role) {
+        return res.json({
+            status: 'error',
+            message: 'Role not found'
+        });
+    }
+
+    try {
         
         // Carikan data yang akan diupdate
         const models = await Users.scope('defaultScope').findOne({
@@ -366,6 +367,18 @@ exports.updated = async (req, res) => {
                 status: 'error',
                 message: 'Data not found or Data is deleted'
             });
+        }
+
+        // Cek apakah email sama dengan email yang lama, kalo sama skip kondisi ini
+        if (models.email !== email) {
+            // Cek apakah email sudah ada di database
+            const existingUser = await Users.findOne({ where: { email: email } });
+            if (existingUser) {
+                return res.json({
+                    status: 'error',
+                    message: 'Email already exists'
+                });
+            }
         }
 
         models.id_role = id_role || models.id_role;
