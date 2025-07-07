@@ -51,5 +51,5 @@ const APP_PORT = process.env.APP_PORT || 3000;
 const APP_URL = process.env.APP_URL || "http://localhost";
 
 app.listen(APP_PORT, () => {
-    console.log(`🚀 Server is running at ${APP_URL}:${APP_PORT}`);
+    console.log(`Server is running at ${APP_URL}:${APP_PORT}`);
 });
