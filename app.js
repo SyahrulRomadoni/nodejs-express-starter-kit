@@ -47,9 +47,9 @@ app.get('/', (req, res) => {
 });
 
 // Konfigurasi port & URL dari .env
-const APP_PORT = process.env.APP_PORT || 3000;
-const APP_URL = process.env.APP_URL || "http://localhost";
+const APP_PORT = process.env.APP_PORT || 3001;
+const APP_HOST = process.env.APP_HOST || "localhost";
 
-app.listen(APP_PORT, () => {
-    console.log(`Server is running at ${APP_URL}:${APP_PORT}`);
+app.listen(APP_PORT, APP_HOST, () => {
+  console.log(`✅ Server listening on http://${APP_HOST}:${APP_PORT}`);
 });
