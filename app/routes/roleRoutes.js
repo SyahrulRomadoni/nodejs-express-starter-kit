@@ -11,6 +11,7 @@ const {
 } = require('../controllers/roleController');
 
 const router = express.Router();
+router.routeName = '/role';
 
 router.get('/', authenticateToken, index);
 router.post('/', authenticateToken, created);

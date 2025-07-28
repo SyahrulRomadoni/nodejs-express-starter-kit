@@ -12,6 +12,7 @@ const {
 } = require('../controllers/userController');
 
 const router = express.Router();
+router.routeName = '/user';
 
 router.get('/current', authenticateToken, getCurrent);
 router.get('/', authenticateToken, index);
