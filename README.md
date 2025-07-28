@@ -36,6 +36,7 @@ Project/
 │   │   ├── roles.js
 │   │   └── users.js
 │   ├── routes/
+│   │   ├── index.js
 │   │   ├── authRoutes.js
 │   │   ├── roleRoutes.js
 │   │   └── userRoutes.js
