@@ -100,7 +100,7 @@ exports.created = async (req, res) => {
 
         res.json({
             status: 'success',
-            message: 'Data updated successfully',
+            message: 'Data created successfully',
             data: responseData
         });
     } catch (error) {
