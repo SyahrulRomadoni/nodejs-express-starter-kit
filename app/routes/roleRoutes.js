@@ -8,7 +8,7 @@ const {
     read,
     updated,
     deleted
-} = require('../controllers/roleController');
+} = require('../controllers/roleControllers');
 
 const router = express.Router();
 router.routeName = '/role';

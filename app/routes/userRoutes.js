@@ -9,7 +9,7 @@ const {
     read,
     updated,
     deleted
-} = require('../controllers/userController');
+} = require('../controllers/userControllers');
 
 const router = express.Router();
 router.routeName = '/user';
