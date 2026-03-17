@@ -1,4 +1,4 @@
-// app/models
+// src/models
 
 module.exports = (sequelize, Sequelize) => {
     const Roles = sequelize.define('Roles', {
@@ -8,15 +8,16 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
             primaryKey: true
         },
-        // uuid: {
-        //     type: Sequelize.UUID,
-        //     defaultValue: Sequelize.UUIDV4,
-        //     allowNull: false,
-        //     primaryKey: true
-        // },
+        uuid: {
+            type: Sequelize.UUID,
+            // defaultValue: Sequelize.UUIDV4,
+            allowNull: false,
+            unique: true
+        },
         name: {
             type: Sequelize.STRING,
-            allowNull: false
+            allowNull: false,
+            unique: true
         },
         created_at: {
             type: Sequelize.DATE,
@@ -32,13 +33,15 @@ module.exports = (sequelize, Sequelize) => {
         }
     }, {
         tableName: 'roles',
-        underscored: true,
-        timestamps: true,
+        underscored: true, // Mengubah camelCase jadi snake_case (createdAt -> created_at)
+        timestamps: true,  // Mengaktifkan created_at & updated_at
     });
 
-    Roles.associate = function(models) {
+    // Relasi to users
+    Roles.associate = (models) => {
         Roles.hasMany(models.Users, {
-            foreignKey: 'id_role',
+            foreignKey: 'uuid_role',
+            sourceKey: 'uuid',
             as: 'users'
         });
     };

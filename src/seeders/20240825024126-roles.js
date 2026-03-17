@@ -1,4 +1,4 @@
-// app/seeders
+// src/seeders
 
 'use strict';
 
@@ -10,13 +10,13 @@ module.exports = {
     async up (queryInterface, Sequelize) {
         return queryInterface.bulkInsert('roles', [
             {
-                // uuid: uuidv4(),
+                uuid: uuidv4(),
                 name: 'Admin',
                 created_at: new Date(),
                 updated_at: new Date()
             },
             {
-                // uuid: uuidv4(),
+                uuid: uuidv4(),
                 name: 'User',
                 created_at: new Date(),
                 updated_at: new Date()

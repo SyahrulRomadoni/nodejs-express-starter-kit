@@ -1,57 +1,40 @@
-// app/controllers
+// src/controllers
 
 const { Roles } = require('../models');
+const { v4: uuidv4 } = require('uuid');
 
 exports.index = async (req, res) => {
-    // kalau mau pake limit data
-    // const limit = parseInt(req.query.limit, 10) || 100;
+    // Config Pagination
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : null;
-
-    // Kalo mau pake pagination
     const page = parseInt(req.query.page, 10) || 1;
     const offset = (page - 1) * limit;
 
     try {
-        // Buat data model untuk menampilkan data berdasarkan limit dan offset
-        const { count, rows: models } = await Roles.scope('defaultScope').findAndCountAll({
+        // Model
+        const { count, rows: models } = await Roles.findAndCountAll({
             where: { deleted_at: null },
-            // attributes: ['id', 'name'],
             order: [['id', 'DESC']],
-
-            // kalau mau pake limit data
             limit: limit !== null ? limit : undefined,
-            
-            // kalau mau pake pagination
             offset: offset
         });
 
-        // const responseData = models.map(({ id, name }) => ({ id, name }));
-        const responseData = models.map((model, index) => ({
-            // ID berurutan (Dummy ID) tapi bisa pakai langsung id dari column di database kalo mau (soal disini saya pakai id tidak ada pakai id)
-            // id: offset + index + 1,
-            
-            // Data yang diambil dari model database
-            id   : model.id,
+        // Respponse Data
+        const responseData = models.map((model) => ({
+            // id   : model.id,
+            uuid : model.uuid,
             name : model.name
         }));
 
-        // Kalo mau pake pagination
-        const totalPages = Math.ceil(count / limit);
-
+        // Return Json
         res.json({
             status: 'success',
             message: 'Data successfully found',
             data: {
                 data: responseData,
                 total_all_data: count,
-
-                // kalau mau pake limit data
-                // limit_data: limit,
                 limit: limit !== null ? limit : undefined,
-
-                // kalau mau pake pagination
                 current_page: page,
-                total_pages: totalPages
+                total_pages: Math.ceil(count / limit)
             }
         });
     } catch (error) {
@@ -63,10 +46,10 @@ exports.index = async (req, res) => {
 };
 
 exports.created = async (req, res) => {
-    // Ambil data dari request
+    // Get Request Body
     const { name } = req.body;
 
-    // Validasi Body
+    // Validation Body
     const fields = { name };
     for (const [key, value] of Object.entries(fields)) {
         if (!value) {
@@ -76,28 +59,31 @@ exports.created = async (req, res) => {
             });
         }
     }
-
-    // Cek role apakah data sudah ada
-    const nameCheck = await Roles.findOne({ where: { name } });
-    if (nameCheck) {
-        return res.json({
-            status: 'error',
-            message: 'Role already exists'
-        });
-    }
-
+    
     try {
-        // Bikin data baru
+        // Check unique name
+        const nameCheck = await Roles.findOne({ where: { name: name } });
+        if (nameCheck) {
+            return res.json({
+                status: 'error',
+                message: 'Role already exists'
+            });
+        }
+        
+        // New Data
         const models = new Roles();
-        models.name = name || models.name;
+        models.uuid = uuidv4();
+        models.name = name;
         await models.save();
 
         // Data yang akan di tampilkan
         const responseData = {
-            id   : models.id,
+            // id   : models.id,
+            uuid : models.uuid,
             name : models.name
         };
 
+        // Return Json
         res.json({
             status: 'success',
             message: 'Data created successfully',
@@ -112,25 +98,27 @@ exports.created = async (req, res) => {
 };
 
 exports.read = async (req, res) => {
-    // Ambil parameter dari request
-    const { id } = req.params;
+    // Get Request Param
+    const { uuid } = req.params;
 
-    // Validasi Parameter
-    if (!id) {
+    // Validation Parameter
+    if (!uuid) {
         return res.json({
             status: 'error',
-            message: 'ID is required'
+            message: 'UUID is required'
         });
     }
 
     try {
         // Cari data berdasarkan ID
-        const models = await Roles.scope('defaultScope').findOne({
+        const models = await Roles.findOne({
             where: {
-                id,
+                uuid: uuid,
                 deleted_at: null
             }
         });
+
+        // Validation Models
         if (!models) {
             return res.json({
                 status: 'error',
@@ -138,12 +126,14 @@ exports.read = async (req, res) => {
             });
         }
 
-        // Data yang akan di tampilkan
+        // Response Data
         const responseData = {
-            id   : models.id,
+            // id   : models.id,
+            uuid : models.uuid,
             name : models.name
         };
 
+        // Return Json
         res.json({
             status: 'success',
             message: 'Data successfully found',
@@ -158,20 +148,21 @@ exports.read = async (req, res) => {
 };
 
 exports.updated = async (req, res) => {
-    // Ambil parameter dari request
-    const { id } = req.params;
-    // Ambil data dari request
+    // Get Request Parameter
+    const { uuid } = req.params;
+
+    // Get Request Body 
     const { name } = req.body;
 
-    // Validasi id
-    if (!id) {
+    // Validation id
+    if (!uuid) {
         return res.json({
             status: 'error',
-            message: 'ID is required'
+            message: 'UUID is required'
         });
     }
 
-    // Validasi Body
+    // Validation Body
     const fields = { name };
     for (const [key, value] of Object.entries(fields)) {
         if (!value) {
@@ -181,26 +172,25 @@ exports.updated = async (req, res) => {
             });
         }
     }
-
-    // Cek role apakah data sudah ada
-    const nameCheck = await Roles.findOne({ where: { name } });
-    if (nameCheck) {
-        return res.json({
-            status: 'error',
-            message: "The role name cannot be the same as the current name"
-        });
-    }
-
+    
     try {
+        // Check unique name
+        const nameCheck = await Roles.findOne({ where: { name: name } });
+        if (nameCheck) {
+            return res.json({
+                status: 'error',
+                message: "The role name cannot be the same as the current name"
+            });
+        }
         // Carikan data yang akan diupdate
         const models = await Roles.scope('defaultScope').findOne({
             where: {
-                id,
+                uuid: uuid,
                 deleted_at: null
             }
         });
 
-        // Validasi Data ada atau tidak
+        // Validation Models
         if (!models) {
             return res.json({
                 status: 'error',
@@ -212,12 +202,14 @@ exports.updated = async (req, res) => {
         models.name = name || models.name;
         await models.save();
 
-        // Data yang akan di tampilkan
+        // Resnponse Json
         const responseData = {
-            id   : models.id,
+            // id   : models.id,
+            uuid : models.uuid,
             name : models.name
         };
 
+        // Return Json
         res.json({
             status: 'success',
             message: 'Data updated successfully',
@@ -232,27 +224,27 @@ exports.updated = async (req, res) => {
 };
 
 exports.deleted = async (req, res) => {
-    // Ambil parameter dari request
-    const { id } = req.params;
+    // Get Request Param
+    const { uuid } = req.params;
 
-    // Validasi Parameter
-    if (!id) {
+    // Validation Parameter
+    if (!uuid) {
         return res.json({
             status: 'error',
-            message: 'User ID is required'
+            message: 'User UUID is required'
         });
     }
 
     try {
         // Cari data berdasarkan ID
-        const models = await Roles.scope('defaultScope').findOne({
+        const models = await Roles.findOne({
             where: {
-                id,
+                uuid: uuid,
                 deleted_at: null
             }
         });
 
-        // Validasi Data ada atau tidak
+        // Validation Models
         if (!models) {
             return res.json({
                 status: 'error',
@@ -260,10 +252,12 @@ exports.deleted = async (req, res) => {
             });
         }
 
-        // await models.destroy();
+        // Soft Delete
         models.deleted_at = new Date();
         await models.save();
+        // await models.destroy();
 
+        // Return Json
         res.json({
             status: 'success',
             message: 'Data deleted successfully'

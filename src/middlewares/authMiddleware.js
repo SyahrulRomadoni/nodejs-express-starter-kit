@@ -1,4 +1,4 @@
-// app/middlewares
+// src/middlewares
 
 const jwt = require('jsonwebtoken');
 const { isBlacklisted } = require('./tokenBlackList');

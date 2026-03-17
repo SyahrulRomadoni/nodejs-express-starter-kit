@@ -1,4 +1,4 @@
-// app/migrations
+// src/migrations
 
 'use strict';
 
@@ -12,13 +12,13 @@ module.exports = {
                 autoIncrement: true,
                 allowNull: false,
             },
-            // uuid: {
-            //     type: Sequelize.UUID,
-            //     defaultValue: Sequelize.UUIDV4,
-            //     allowNull: false,
-            //     unique: true,
-            //     primaryKey: true
-            // },
+            uuid: {
+                type: Sequelize.UUID,
+                // defaultValue: Sequelize.UUIDV4,
+                allowNull: false,
+                unique: true,
+                primaryKey: true
+            },
             name: {
                 type: Sequelize.STRING,
                 allowNull: false

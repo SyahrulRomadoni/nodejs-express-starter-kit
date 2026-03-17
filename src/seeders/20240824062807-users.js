@@ -1,4 +1,4 @@
-// app/seeders
+// src/seeders
 
 'use strict';
 
@@ -9,16 +9,16 @@ const { v4: uuidv4 } = require('uuid');
 module.exports = {
     async up (queryInterface, Sequelize) {
         
-        // const roles = await queryInterface.sequelize.query(
-        //     `SELECT uuid FROM "roles" ORDER BY "created_at" ASC`,
-        //     { type: Sequelize.QueryTypes.SELECT }
-        // );
+        // Get Role
+        const roles = await queryInterface.sequelize.query(
+            `SELECT uuid FROM "roles" ORDER BY "created_at" ASC`,
+            { type: Sequelize.QueryTypes.SELECT }
+        );
 
         return queryInterface.bulkInsert('users', [
             {
-                // uuid: uuidv4(),
-                // uuid_role: roles[0].uuid,
-                id_role: 1,
+                uuid: uuidv4(),
+                uuid_role: roles[0].uuid,
                 name: 'Admin',
                 email: 'admin@gmail.com',
                 password: await bcrypt.hash('@Password123', 10),
@@ -26,9 +26,8 @@ module.exports = {
                 updated_at: new Date()
             },
             {
-                // uuid: uuidv4(),
-                // uuid_role: roles[1].uuid,
-                id_role: 2,
+                uuid: uuidv4(),
+                uuid_role: roles[1].uuid,
                 name: 'User',
                 email: 'user@gmail.com',
                 password: await bcrypt.hash('@Password123', 10),

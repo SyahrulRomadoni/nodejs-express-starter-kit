@@ -1,4 +1,4 @@
-// app/routes
+// src/routes
 
 const express = require('express');
 const {

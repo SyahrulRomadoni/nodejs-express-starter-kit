@@ -10,21 +10,17 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
-            id_role: {
-                type: Sequelize.INTEGER,
+            uuid: {
+                type: Sequelize.UUID,
+                // defaultValue: Sequelize.UUIDV4,
+                allowNull: false,
+                unique: true,
+                primaryKey: true
+            },
+            uuid_role: {
+                type: Sequelize.UUID,
                 allowNull: false
             },
-            // uuid: {
-            //     type: Sequelize.UUID,
-            //     defaultValue: Sequelize.UUIDV4,
-            //     allowNull: false,
-            //     unique: true,
-            //     primaryKey: true
-            // },
-            // uuid_role: {
-            //     type: Sequelize.UUID,
-            //     allowNull: false
-            // },
             name: {
                 type: Sequelize.STRING,
                 allowNull: false

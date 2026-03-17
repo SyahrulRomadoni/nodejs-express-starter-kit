@@ -1,4 +1,4 @@
-// app/config
+// src/config
 
 require('dotenv').config();
 

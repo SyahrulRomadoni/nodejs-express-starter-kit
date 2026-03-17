@@ -1,4 +1,4 @@
-// app/controllers
+// src/controllers
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -7,8 +7,9 @@ const { Users, Roles } = require('../models');
 const { addToBlacklist, isBlacklisted } = require('../middlewares/tokenBlackList');
 
 exports.register = async (req, res) => {
+    // Get Request Body
     const {
-        id_role,
+        uuid_role,
         name,
         email,
         password
@@ -16,7 +17,7 @@ exports.register = async (req, res) => {
 
     // Validasi body
     const fields = {
-        id_role,
+        uuid_role,
         name,
         email,
         password
@@ -49,6 +50,7 @@ exports.register = async (req, res) => {
     }
 
     try {
+        // Check Email
         const existingUser = await Users.findOne({ where: { email } });
         if (existingUser) {
             return res.json({
@@ -57,23 +59,25 @@ exports.register = async (req, res) => {
             });
         }
 
+        // New Data
         const hashedPassword = await bcrypt.hash(password, 10);
         const users = await Users.create({
-            // uuid: uuidv4(),
-            // uuid_role,
-            id_role,
+            uuid: uuidv4(),
+            uuid_role,
             name,
             email,
             password: hashedPassword
         });
 
+        // Response Json
         const response = {
             id: users.id,
-            id_role: users.id_role,
+            uuid_role: users.uuid_role,
             name: users.name,
             email: users.email
         };
 
+        // Return Json
         res.json({
             status: 'success',
             message: 'User registered successfully',
@@ -88,6 +92,7 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
+    // Get Request Body
     const {
         email,
         password
@@ -129,16 +134,9 @@ exports.login = async (req, res) => {
         // Check user
         const users = await Users.scope('defaultScope').findOne({
             where: {
-                email,
+                email: email,
                 deleted_at: null
-            },
-            include: [
-                {
-                    model: Roles,
-                    as: 'roles',
-                    attributes: ['name']
-                }
-            ]
+            }
         });
         if (!users) {
             return res.json({
@@ -156,18 +154,19 @@ exports.login = async (req, res) => {
             });
         }
 
+        // JWT SIGN
         const accessToken = jwt.sign(
             {
-                id      : users.id,
-                id_role : users.id_role,
-                name    : users.name,
-                email   : users.email,
-                roles   : users.roles.name
+                uuid      : users.uuid,
+                uuid_role : users.uuid_role,
+                name      : users.name,
+                email     : users.email,
             },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRESIN + 'm' || '1440m' }
         );
 
+        // Return Json
         res.json({
             status: 'success',
             message: 'Logged in successfully',

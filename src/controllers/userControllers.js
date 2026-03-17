@@ -1,38 +1,39 @@
-// app/controllers
+// src/controllers
 
 const bcrypt = require('bcryptjs');
 const { Users, Roles } = require('../models');
+const { v4: uuidv4 } = require('uuid');
 
 exports.getCurrent = async (req, res) => {
-    // Ambil parameter dari request
-    const { id } = req.user;
+    // Get Request User
+    const { uuid } = req.user;
 
-    // Validasi Parameter
-    if (!id) {
+    // Validation Parameter
+    if (!uuid) {
         return res.json({
             status: 'error',
-            message: 'User ID is required'
+            message: 'UUID is required'
         });
     }
 
     try {
-        // Cari data berdasarkan ID
-        const models = await Users.scope('defaultScope').findOne({
+        // Models
+        const models = await Users.findOne({
             where: {
-                id,
+                uuid: uuid,
                 deleted_at: null
             },
-            // ambil data dari tabel roles dengan relasi yang sudah di buat
             include: [
                 {
                     model: Roles,
                     as: 'roles',
-                    attributes: ['name']
+                    attributes: ['name'],
+                    required: false
                 }
             ]
         });
 
-        // Validasi jika data tidak ditemukan
+        // Validation Models
         if (!models) {
             return res.json({
                 status: 'error',
@@ -40,15 +41,17 @@ exports.getCurrent = async (req, res) => {
             });
         }
 
-        // Data yang akan di tampilkan
+        // Response Json
         const responseData = {
-            id      : models.id,
-            id_role : models.id_role,
-            name    : models.name,
-            email   : models.email,
-            roles   : models.roles
+            // id        : models.id,
+            uuid      : models.uuid,
+            uuid_role : models.uuid_role,
+            name      : models.name,
+            role      : models.roles ? models.roles.name : null,
+            email     : models.email
         };
 
+        // Return Json
         res.json({
             status: 'success',
             message: 'Data successfully found',
@@ -63,65 +66,48 @@ exports.getCurrent = async (req, res) => {
 };
 
 exports.index = async (req, res) => {
-    // kalau mau pake limit data
-    // const limit = parseInt(req.query.limit, 10) || 100;
+    // Config Pagination
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : null;
-
-    // Kalo mau pake pagination
     const page = parseInt(req.query.page, 10) || 1;
     const offset = (page - 1) * limit;
 
     try {
-        // Buat data model untuk menampilkan data berdasarkan limit dan offset
+        // Models
         const { count, rows: models } = await Users.scope('defaultScope').findAndCountAll({
             where: { deleted_at: null },
-            // attributes: ['id', 'id_role', 'name', 'email'],
+            order: [['id', 'DESC']],
+            limit: limit !== null ? limit : undefined,
+            offset: offset,
             include: [
                 {
                     model: Roles,
                     as: 'roles',
-                    attributes: ['name']
+                    attributes: ['name'],
+                    required: false
                 }
-            ],
-            order: [['id', 'DESC']],
-
-            // kalau mau pake limit data
-            // limit: limit,
-            limit: limit !== null ? limit : undefined,
-
-            // kalau mau pake pagination
-            offset: offset
+            ]
         });
 
-        // const responseData = models.map(({ id, id_role, name, email, roles }) => ({ id, id_role, name, email, roles }));
+        // Response Data
         const responseData = models.map((model, index) => ({
-            // ID berurutan (Dummy ID) tapi bisa pakai langsung id dari column di database kalo mau (soal disini saya pakai id tidak ada pakai id)
-            // id: offset + index + 1,
-
-            // Data yang diambil dari model database
-            id        : model.id,
-            id_role   : model.id_role,
+            // id        : model.id,
+            uuid      : model.uuid,
+            uuid_role : model.uuid_role,
             name      : model.name,
+            role        : model.roles ? model.roles.name : null,
             email     : model.email,
-            roles     : model.roles ? model.roles.name : null
         }));
 
-        // Kalo mau pake pagination
-        const totalPages = Math.ceil(count / limit);
-
+        // Return Json
         res.json({
             status: 'success',
             message: 'Data successfully found',
             data: {
                 data: responseData,
                 total_all_data: count,
-
-                // kalau mau pake limit data
                 limit_data: limit,
-
-                // kalau mau pake pagination
                 current_page: page,
-                total_pages: totalPages
+                total_pages: Math.ceil(count / limit)
             }
         });
     } catch (error) {
@@ -133,17 +119,17 @@ exports.index = async (req, res) => {
 };
 
 exports.created = async (req, res) => {
-    // Ambil data dari request
+    // Get Request Body
     const {
-        id_role,
+        uuid_role,
         name,
         email,
         password
     } = req.body;
 
-    // Validasi Body
+    // Validation Body
     const fields = {
-        id_role,
+        uuid_role,
         name,
         email,
         password
@@ -157,7 +143,7 @@ exports.created = async (req, res) => {
         }
     }
 
-    // Validasi email
+    // Validation email
     const emailRegex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$/;
     if (email.length < 5 || !emailRegex.test(email)) {
         return res.json({
@@ -166,7 +152,7 @@ exports.created = async (req, res) => {
         });
     }
 
-    // Validasi password
+    // Validation password
     const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@#])[a-zA-Z0-9@#]{5,}$/;
     if (!passwordRegex.test(password)) {
         return res.json({
@@ -175,51 +161,45 @@ exports.created = async (req, res) => {
         });
     }
 
-    // // cek format uuid
-    // const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
-    // if (!uuidRegex.test(uuid_role)) {
-    //     return res.json({
-    //         status: 'error',
-    //         message: 'Invalid uuid_role format'
-    //     });
-    // }
-
-    // Cek apakah role sudah ada di database
-    const role = await Roles.findOne({ where: { id: id_role } });
-    if (!role) {
-        return res.json({
-            status: 'error',
-            message: 'Role not found'
-        });
-    }
-    
-    // Cek apakah email sudah ada di database
-    const existingUser = await Users.findOne({ where: { email: email } });
-    if (existingUser) {
-        return res.json({
-            status: 'error',
-            message: 'Email already exists'
-        });
-    }
-
     try {
-        // Bikin data baru
-        const models    = new Users();
-        models.id_role  = id_role;
-        models.name     = name;
-        models.email    = email;
-        models.password = await bcrypt.hash(password, 10);
+        // Check Role on DB
+        const role = await Roles.findOne({ where: { uuid: uuid_role } });
+        if (!role) {
+            return res.json({
+                status: 'error',
+                message: 'Role not found'
+            });
+        }
+        
+        // Check Email Already on DB
+        const existingUser = await Users.findOne({ where: { email: email } });
+        if (existingUser) {
+            return res.json({
+                status: 'error',
+                message: 'Email already exists'
+            });
+        }
+        
+        // New Data
+        const models     = new Users();
+        models.uuid      = uuidv4();
+        models.uuid_role = uuid_role;
+        models.name      = name;
+        models.email     = email;
+        models.password  = await bcrypt.hash(password, 10);
         await models.save();
 
-        // Data yang akan di tampilkan
+        // Response Data
         const responseData = {
-            id      : models.id,
-            id_role : models.id_role,
-            name    : models.name,
-            email   : models.email,
-            roles   : models.roles
+            // id        : models.id,
+            uuid      : models.uuid,
+            uuid_role : models.uuid_role,
+            name      : models.name,
+            email     : models.email,
+            roles     : models.roles
         };
 
+        // Return Json
         res.json({
             status: 'success',
             message: 'Data created successfully',
@@ -235,34 +215,26 @@ exports.created = async (req, res) => {
 
 exports.read = async (req, res) => {
     // Ambil parameter dari request
-    const { id } = req.params;
+    const { uuid } = req.params;
 
-    // Validasi Parameter
-    if (!id) {
+    // Validation Parameter
+    if (!uuid) {
         return res.json({
             status: 'error',
-            message: 'ID is required'
+            message: 'UUID is required'
         });
     }
 
     try {
         // Cari data berdasarkan ID
-        const models = await Users.scope('defaultScope').findOne({
+        const models = await Users.findOne({
             where: {
-                id,
+                uuid: uuid,
                 deleted_at: null
             },
-            // ambil data dari tabel roles dengan relasi yang sudah di buat
-            include: [
-                {
-                    model: Roles,
-                    as: 'roles',
-                    attributes: ['name']
-                }
-            ],
         });
 
-        // Validasi jika data tidak ditemukan
+        // Validation Models
         if (!models) {
             return res.json({
                 status: 'error',
@@ -270,14 +242,17 @@ exports.read = async (req, res) => {
             });
         }
 
+        // Response Data
         const responseData = {
-            id      : models.id,
-            id_role : models.id_role,
-            name    : models.name,
-            email   : models.email,
-            roles   : models.roles
+            // id        : models.id,
+            uuid      : models.uuid,
+            uuid_role : models.uuid_role,
+            name      : models.name,
+            email     : models.email,
+            roles     : models.roles
         };
 
+        // Return Json
         res.json({
             status: 'success',
             message: 'Data successfully found',
@@ -292,27 +267,28 @@ exports.read = async (req, res) => {
 };
 
 exports.updated = async (req, res) => {
-    // Ambil parameter dari request
-    const { id } = req.params;
-    // Ambil data dari request
+    // Get Request Parameter
+    const { uuid } = req.params;
+
+    // Get Request Body
     const {
-        id_role,
+        uuid_role,
         name,
         email,
         password
     } = req.body;
 
-    // Validasi Parameter
-    if (!id) {
+    // Validation Parameter
+    if (!uuid) {
         return res.json({
             status: 'error',
-            message: 'ID is required'
+            message: 'UUID is required'
         });
     }
 
-    // Validasi Body
+    // Validation Body
     const fields = {
-        id_role,
+        uuid_role,
         name,
         email
     };
@@ -325,7 +301,7 @@ exports.updated = async (req, res) => {
         }
     }
 
-    // Validasi email
+    // Validation email
     const emailRegex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$/;
     if (email.length < 5 || !emailRegex.test(email)) {
         return res.json({
@@ -334,8 +310,8 @@ exports.updated = async (req, res) => {
         });
     }
 
-    // Validasi password
-    if (password) { // Jika password ada isinya maka jalankan validasi ini
+    // Validation password
+    if (password) {
         const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@#])[a-zA-Z0-9@#]{5,}$/;
         if (!passwordRegex.test(password)) {
             return res.json({
@@ -345,52 +321,28 @@ exports.updated = async (req, res) => {
         }
     }
 
-    // // cek format uuid
-    // const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
-    // if (!uuidRegex.test(uuid_role)) {
-    //     return res.json({
-    //         status: 'error',
-    //         message: 'Invalid uuid_role format'
-    //     });
-    // }
-
-    // Cek apakah role sudah ada di database
-    const role = await Roles.findOne({ where: { id: id_role } });
-    if (!role) {
-        return res.json({
-            status: 'error',
-            message: 'Role not found'
-        });
-    }
-
     try {
-        // Carikan data yang akan diupdate
-        const models = await Users.scope('defaultScope').findOne({
-            where: {
-                id,
-                deleted_at: null
-            },
-            // ambil data dari tabel roles dengan relasi yang sudah di buat
-            include: [
-                {
-                    model: Roles,
-                    as: 'roles',
-                    attributes: ['name']
-                }
-            ]
-        });
 
-        // Validasi Data ada atau tidak
-        if (!models) {
+        // Check Role on DB
+        const role = await Roles.findOne({ where: { uuid: uuid_role } });
+        if (!role) {
             return res.json({
                 status: 'error',
-                message: 'Data not found or Data is deleted'
+                message: 'Role not found'
             });
         }
+        
+        // Models
+        const models = await Users.findOne({
+            where: {
+                uuid: uuid,
+                deleted_at: null
+            },
+        });
 
-        // Cek apakah email sama dengan email yang lama, kalo sama skip kondisi ini
+        // Check Email and same old email and Skip
         if (models.email !== email) {
-            // Cek apakah email sudah ada di database
+            // Check Email on DB
             const existingUser = await Users.findOne({ where: { email: email } });
             if (existingUser) {
                 return res.json({
@@ -400,24 +352,34 @@ exports.updated = async (req, res) => {
             }
         }
 
+        // Validation Data ada atau tidak
+        if (!models) {
+            return res.json({
+                status: 'error',
+                message: 'Data not found or Data is deleted'
+            });
+        }
+
         // Update data
-        models.id_role = id_role || models.id_role;
-        models.name    = name    || models.name;
-        models.email   = email   || models.email;
+        models.uuid_role = uuid_role || models.uuid_role;
+        models.name      = name      || models.name;
+        models.email     = email     || models.email;
         if (password) {
             models.password = await bcrypt.hash(password, 10);
         }
         await models.save();
 
-        // Data yang akan di tampilkan
+        // Response Json
         const responseData = {
-            id: models.id,
+            // id: models.id,
+            uuid: models.uuid,
             id_role: models.id_role,
             name: models.name,
             email: models.email,
             roles: models.roles
         };
 
+        // Return Json
         res.json({
             status: 'success',
             message: 'Data updated successfully',
@@ -432,10 +394,11 @@ exports.updated = async (req, res) => {
 };
 
 exports.deleted = async (req, res) => {
-    const { id } = req.params;
+    // Get Request Parameter
+    const { uuid } = req.params;
 
-    // Validasi Parameter
-    if (!id) {
+    // Validation Parameter
+    if (!uuid) {
         return res.json({
             status: 'error',
             message: 'ID is required'
@@ -444,14 +407,14 @@ exports.deleted = async (req, res) => {
 
     try {
         // Cari data berdasarkan ID
-        const models = await Users.scope('defaultScope').findOne({
+        const models = await Users.findOne({
             where: {
-                id,
+                uuid: uuid,
                 deleted_at: null
             }
         });
 
-        // Validasi jika data tidak ditemukan
+        // Validation jika data tidak ditemukan
         if (!models) {
             return res.json({
                 status: 'error',
@@ -459,10 +422,12 @@ exports.deleted = async (req, res) => {
             });
         }
 
+        // Response Json
         // await models.destroy();
         models.deleted_at = new Date();
         await models.save();
 
+        // Return Json
         res.json({
             status: 'success',
             message: 'Data deleted successfully'

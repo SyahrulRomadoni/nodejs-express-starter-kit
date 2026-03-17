@@ -14,7 +14,7 @@ const express = require('express');
 const path = require('path');
 
 // Import routes
-const routes = require('./app/routes');
+const routes = require('./src/routes');
 
 const app = express();
 

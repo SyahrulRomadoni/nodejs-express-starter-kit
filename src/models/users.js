@@ -1,5 +1,3 @@
-// app/
-
 module.exports = (sequelize, Sequelize) => {
     const Users = sequelize.define('Users', {
         id: {
@@ -8,20 +6,16 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
             primaryKey: true
         },
-        id_role: {
-            type: Sequelize.INTEGER,
+        uuid: {
+            type: Sequelize.UUID,
+            // defaultValue: Sequelize.UUIDV4,
             allowNull: false,
+            unique: true
         },
-        // uuid: {
-        //     type: Sequelize.UUID,
-        //     primaryKey: true,
-        //     allowNull: false,
-        //     defaultValue: Sequelize.UUIDV4
-        // },
-        // uuid_role: {
-        //     type: Sequelize.UUID,
-        //     allowNull: false
-        // },
+        uuid_role: {
+            type: Sequelize.UUID,
+            allowNull: false
+        },
         name: {
             type: Sequelize.STRING,
             allowNull: false
@@ -29,7 +23,7 @@ module.exports = (sequelize, Sequelize) => {
         email: {
             type: Sequelize.STRING,
             allowNull: false,
-            unique: true
+            unique: true,
         },
         password: {
             type: Sequelize.STRING,
@@ -53,9 +47,11 @@ module.exports = (sequelize, Sequelize) => {
         timestamps: true,
     });
 
-    Users.associate = function(models) {
+    // Relasi to Roles
+    Users.associate = (models) => {
         Users.belongsTo(models.Roles, {
-            foreignKey: 'id_role',
+            foreignKey: 'uuid_role',
+            targetKey: 'uuid',
             as: 'roles'
         });
     };

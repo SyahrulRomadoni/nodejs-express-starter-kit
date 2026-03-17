@@ -18,7 +18,9 @@ node app.js
 ## Structure ##
 ```plaintext
 Project/
-├── app/
+├── public/
+│   └── express-logo.png
+├── src/
 │   ├── config/
 │   │   └── config.js
 │   ├── controller/
@@ -43,8 +45,6 @@ Project/
 │   └── seeders/
 │       ├── 20240824062807-users.js
 │       └── 20240825024126-roles.js
-├── public/
-│   └── express-logo.png
 ├── .env.example
 ├── app.js
 ├── generate-secret.js
